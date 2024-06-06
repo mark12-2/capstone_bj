@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "336636327627",
+    "project_id": "capstone-c1ee2",
+    "storage_bucket": "capstone-c1ee2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:336636327627:android:c448c37b78be52c53b0d4e",
+        "android_client_info": {
+          "package_name": "com.bluejobs"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmAF8yy-DIj0zK6aUzQ3Mcnnoy_lCYLkE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
