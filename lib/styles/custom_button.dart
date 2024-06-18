@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 //import 'package:bluejobs_user/styles/custom_button.dart';
 
 class CustomButton extends StatelessWidget {
-  final VoidCallback onTap;
+  final VoidCallback onPressed;
   final String buttonText;
   final Color buttonColor;
   final Color textColor;
@@ -15,7 +15,7 @@ class CustomButton extends StatelessWidget {
 
    const CustomButton({
     Key? key,
-    required this.onTap,
+    required this.onPressed,
     required this.buttonText,
     this.buttonColor = const Color.fromARGB(255, 243, 107, 4),
     this.textColor = Colors.white,
@@ -29,7 +29,7 @@ class CustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onTap,
+      onTap: onPressed,
       child: Container(
         width: width,
         height: height,

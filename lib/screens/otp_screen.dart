@@ -1,3 +1,4 @@
+import 'package:capstone/screens/user_information.dart';
 import 'package:capstone/styles/custom_button.dart';
 import 'package:capstone/styles/textstyle.dart';
 import 'package:flutter/material.dart';
@@ -167,7 +168,7 @@ class _OtpScreenState extends State<OtpScreen> {
               // new user
               Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => const HomePage()),
+                  MaterialPageRoute(builder: (context) => const UserInformation()),
                   (route) => false);
             }
           },

@@ -1,8 +1,10 @@
 import 'package:capstone/provider/auth_provider.dart';
 import 'package:capstone/screens/otp_screen.dart';
 import 'package:capstone/screens/signup.dart';
+import 'package:capstone/screens/user_information.dart';
 import 'package:capstone/styles/custom_button.dart';
 import 'package:capstone/styles/textstyle.dart';
+import 'package:capstone/utils/utils.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter_svg/flutter_svg.dart';
@@ -160,7 +162,7 @@ class _SignInPageState extends State<SignInPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const SignUpPage()),
+                            builder: (context) => const UserInformation()),
                       );
                     },
                     child: Text(
@@ -181,8 +183,16 @@ class _SignInPageState extends State<SignInPage> {
 
   // function upon signing in with phone number
   void sendPhoneNumber() {
-    final ap = Provider.of<AuthProvider>(context, listen: false);
-    String phoneNumber = phoneController.text.trim();
-    ap.signInWithPhone(context, "+${selectedCountry.phoneCode}$phoneNumber");
+  final ap = Provider.of<AuthProvider>(context, listen: false);
+  String phoneNumber = phoneController.text.trim();
+  if (phoneNumber.isNotEmpty) {
+    try {
+      ap.signInWithPhone(context, "+${selectedCountry.phoneCode}$phoneNumber");
+    } catch (e) {
+      showSnackBar(context, "Failed to sign in: ${e.toString()}");
+    }
+  } else {
+    showSnackBar(context, "Please enter a valid phone number.");
   }
+}
 }

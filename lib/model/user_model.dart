@@ -1,7 +1,9 @@
 class UserModel {
   String name;
   String email;
-  String bio;
+  String role;
+  String birthdate;
+  String address;
   String profilePic;
   String createdAt;
   String phoneNumber;
@@ -10,7 +12,9 @@ class UserModel {
   UserModel({
     required this.name,
     required this.email,
-    required this.bio,
+    required this.role,
+    required this.birthdate,
+    required this.address,
     required this.profilePic,
     required this.createdAt,
     required this.phoneNumber,
@@ -20,13 +24,15 @@ class UserModel {
   // from map
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel( 
-      name: map['name'] ?? '',
-      email: map['email'] ?? '',
-      bio: map['bio'] ?? '',
-      uid: map['uid'] ?? '',
-      phoneNumber: map['phoneNumber'] ?? '',
-      createdAt: map['createdAt'] ?? '',
-      profilePic: map['profilePic'] ?? '',
+      name: map['name']?? '',
+      email: map['email']?? '',
+      role: map['role']?? '',
+      birthdate: map['birthdate']?? '', 
+      address: map['address']?? '',
+      profilePic: map['profilePic']?? '',
+      createdAt: map['createdAt']?? '',
+      phoneNumber: map['phoneNumber']?? '',
+      uid: map['uid']?? '',
     );
   }
 
@@ -35,11 +41,13 @@ class UserModel {
     return {
       "name": name,
       "email": email,
-      "uid": uid,
-      "bio": bio,
+      "role": role, 
+      "birthdate": birthdate, 
+      "address": address, 
       "profilePic": profilePic,
       "phoneNumber": phoneNumber,
       "createdAt": createdAt,
+      "uid": uid,
     };
   }
 }

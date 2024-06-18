@@ -219,15 +219,15 @@ class _BlueCollarJobHuntersFormState extends State<BlueCollarJobHuntersForm> {
                             .completeNumber); // This will print the complete number with country code
                       },
                     ),
-                    CustomButton(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const ProfileUploadPage()));
-                        },
-                        buttonText: 'Next'),
+                    // CustomButton(
+                    //     onTap: () {
+                    //       Navigator.push(
+                    //           context,
+                    //           MaterialPageRoute(
+                    //               builder: (context) =>
+                    //                   const ProfileUploadPage()));
+                    //     },
+                    //     buttonText: 'Next'),
                   ],
                 ),
               ),
@@ -351,14 +351,14 @@ class _ProfileUploadPageState extends State<ProfileUploadPage> {
                 const SizedBox(
                   height: 20,
                 ),
-                CustomButton(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const AddressPage()));
-                    },
-                    buttonText: 'Next'),
+                // CustomButton(
+                //     onTap: () {
+                //       Navigator.push(
+                //           context,
+                //           MaterialPageRoute(
+                //               builder: (context) => const AddressPage()));
+                //     },
+                //     buttonText: 'Next'),
               ],
             ),
           ),
@@ -464,14 +464,14 @@ class _AddressPageState extends State<AddressPage> {
           const SizedBox(
             height: 20,
           ),
-          CustomButton(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const HomePage()));
-              },
-              buttonText: 'Next')
+          // CustomButton(
+          //     onTap: () {
+          //       Navigator.push(
+          //           context,
+          //           MaterialPageRoute(
+          //               builder: (context) => const HomePage()));
+          //     },
+          //     buttonText: 'Next')
         ],
       ),
     );
@@ -531,14 +531,14 @@ class _DoneCreatePageState extends State<DoneCreatePage> {
                 padding: const EdgeInsets.all(10),
                 child: ListBody(
                   children: [
-                    CustomButton(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const NavBarPage()));
-                        },
-                        buttonText: 'Get Started'),
+                    // CustomButton(
+                    //     onTap: () {
+                    //       Navigator.push(
+                    //           context,
+                    //           MaterialPageRoute(
+                    //               builder: (context) => const NavBarPage()));
+                    //     },
+                    //     buttonText: 'Get Started'),
                   ],
                 ),
               )
@@ -586,7 +586,7 @@ class _EmployerFormState extends State<EmployerForm> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => ResidentialEmployerPage()),
+                          builder: (context) => BlueCollarJobHuntersForm()),
                     );
                   },
                 ),
