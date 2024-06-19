@@ -1,4 +1,5 @@
 import 'package:capstone/screens/user_information.dart';
+import 'package:capstone/screensforhome/home_screen.dart';
 import 'package:capstone/styles/custom_button.dart';
 import 'package:capstone/styles/textstyle.dart';
 import 'package:flutter/material.dart';
@@ -151,24 +152,24 @@ class _OtpScreenState extends State<OtpScreen> {
           (value) async {
             if (value == true) {
               // user exists in our app
-              // ap.getDataFromFirestore().then(
-              //       (value) => ap.saveUserDataToSP().then(
-              //             (value) => ap.setSignIn().then(
-              //                   (value) =>
-              //                    Navigator.pushAndRemoveUntil(
-              //                       context,
-              //                       MaterialPageRoute(
-              //                         builder: (context) => const HomeScreen(),
-              //                       ),
-              //                       (route) => false),
-              //                 ),
-              //           ),
-              //     );
+              ap.getDataFromFirestore().then(
+                    (value) => ap.saveUserDataToSP().then(
+                          (value) => ap.setSignIn().then(
+                                (value) => Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const HomeScreen(),
+                                    ),
+                                    (route) => false),
+                              ),
+                        ),
+                  );
             } else {
               // new user
               Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => const UserInformation()),
+                  MaterialPageRoute(
+                      builder: (context) => const UserInformation()),
                   (route) => false);
             }
           },

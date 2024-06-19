@@ -4,6 +4,7 @@ import 'package:capstone/address/addresses.dart';
 import 'package:capstone/model/user_model.dart';
 import 'package:capstone/provider/auth_provider.dart';
 import 'package:capstone/screensforhome/home.dart';
+import 'package:capstone/screensforhome/home_screen.dart';
 import 'package:capstone/styles/custom_button.dart';
 import 'package:capstone/styles/custom_theme.dart';
 import 'package:capstone/styles/responsive_utils.dart';
@@ -108,7 +109,7 @@ class _UserInformationState extends State<UserInformation> {
                         padding: const EdgeInsets.only(left: 20),
                         child: Align(
                           alignment: Alignment.centerLeft,
-                          child: Text("Let's set up your account!",
+                          child: Text("Hi New User! Let's set up your account.",
                               style: CustomTextStyle.semiBoldText.copyWith(
                                   fontSize: responsiveSize(context, 0.05))),
                         )),
@@ -292,8 +293,7 @@ class _UserInformationState extends State<UserInformation> {
                             onSelected: (String selection) {
                               setState(
                                 () {
-                                  _address =
-                                      selection; // Update the _address variable with the selected option
+                                  _address = selection;
                                 },
                               );
                             },
@@ -341,17 +341,17 @@ class _UserInformationState extends State<UserInformation> {
         userModel: userModel,
         profilePic: image!,
         onSuccess: () {
-          // ap.saveUserDataToSP().then(
-          //   (value) => ap.setSignIn().then(
-          //     (value) => Navigator.pushAndRemoveUntil(
-          //       context,
-          //       MaterialPageRoute(
-          //         builder: (context) => const HomePage(),
-          //       ),
-          //       (route) => false,
-          //     ),
-          //   ),
-          // );
+          ap.saveUserDataToSP().then(
+                (value) => ap.setSignIn().then(
+                      (value) => Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const HomeScreen(),
+                        ),
+                        (route) => false,
+                      ),
+                    ),
+              );
         },
       );
     } else {

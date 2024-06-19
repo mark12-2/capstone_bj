@@ -2,6 +2,7 @@ import 'package:capstone/provider/auth_provider.dart';
 import 'package:capstone/screens/otp_screen.dart';
 import 'package:capstone/screens/signup.dart';
 import 'package:capstone/screens/user_information.dart';
+import 'package:capstone/screensforhome/home.dart';
 import 'package:capstone/styles/custom_button.dart';
 import 'package:capstone/styles/textstyle.dart';
 import 'package:capstone/utils/utils.dart';
@@ -162,7 +163,7 @@ class _SignInPageState extends State<SignInPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const UserInformation()),
+                            builder: (context) => const HomePage()),
                       );
                     },
                     child: Text(

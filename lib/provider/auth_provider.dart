@@ -81,7 +81,6 @@ class AuthProvider extends ChangeNotifier {
       User? user = (await _firebaseAuth.signInWithCredential(creds)).user;
 
       if (user != null) {
-        // carry our logic
         _uid = user.uid;
         onSuccess();
       }
@@ -151,7 +150,26 @@ class AuthProvider extends ChangeNotifier {
   }
 
 
-
+Future getDataFromFirestore() async {
+    await _firebaseFirestore
+        .collection("users")
+        .doc(_firebaseAuth.currentUser!.uid)
+        .get()
+        .then((DocumentSnapshot snapshot) {
+      _userModel = UserModel(
+        name: snapshot['name'],
+        email: snapshot['email'],
+        role: snapshot['role'],
+        address: snapshot['address'],
+        birthdate: snapshot['birthdate'],
+        createdAt: snapshot['createdAt'],
+        uid: snapshot['uid'],
+        profilePic: snapshot['profilePic'],
+        phoneNumber: snapshot['phoneNumber'],
+      );
+      _uid = userModel.uid;
+    });
+  }
 
 
   // storing data locally
@@ -176,3 +194,5 @@ class AuthProvider extends ChangeNotifier {
     s.clear();
   }
 }
+
+
