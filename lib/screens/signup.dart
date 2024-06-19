@@ -11,7 +11,7 @@ import 'package:capstone/styles/custom_button.dart';
 import 'package:confetti/confetti.dart';
 import 'dart:async';
 import 'package:capstone/styles/custom_inkwell_signup.dart';
-import 'package:capstone/screens/employer_form.dart';
+// import 'package:capstone/screens/employer_form.dart';
 import 'package:capstone/address/addresses.dart';
 
 class SignUpPage extends StatefulWidget {

@@ -143,13 +143,10 @@ class _SignInPageState extends State<SignInPage> {
 
               const SizedBox(height: 20),
 
-              TextButton(
-                onPressed: () => sendPhoneNumber(),
-                child: Text(
-                  "Sign in",
-                  style: CustomTextStyle.regularText.copyWith(
-                    color: Colors.white,
-                  ),
+              SizedBox(
+                child: CustomButton(
+                  onPressed: () => sendPhoneNumber(),
+                  buttonText: "Sign in",
                 ),
               ),
 
@@ -167,7 +164,7 @@ class _SignInPageState extends State<SignInPage> {
                       );
                     },
                     child: Text(
-                      "Register here",
+                      "HomePage shortcut for viewing and fix",
                       style: CustomTextStyle.regularText.copyWith(
                         color: Colors.white,
                       ),
@@ -184,16 +181,17 @@ class _SignInPageState extends State<SignInPage> {
 
   // function upon signing in with phone number
   void sendPhoneNumber() {
-  final ap = Provider.of<AuthProvider>(context, listen: false);
-  String phoneNumber = phoneController.text.trim();
-  if (phoneNumber.isNotEmpty) {
-    try {
-      ap.signInWithPhone(context, "+${selectedCountry.phoneCode}$phoneNumber");
-    } catch (e) {
-      showSnackBar(context, "Failed to sign in: ${e.toString()}");
+    final ap = Provider.of<AuthProvider>(context, listen: false);
+    String phoneNumber = phoneController.text.trim();
+    if (phoneNumber.isNotEmpty) {
+      try {
+        ap.signInWithPhone(
+            context, "+${selectedCountry.phoneCode}$phoneNumber");
+      } catch (e) {
+        showSnackBar(context, "Failed to sign in: ${e.toString()}");
+      }
+    } else {
+      showSnackBar(context, "Please enter a valid phone number.");
     }
-  } else {
-    showSnackBar(context, "Please enter a valid phone number.");
   }
-}
 }
