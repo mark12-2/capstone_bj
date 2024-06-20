@@ -1,5 +1,5 @@
-import 'package:capstone/nav/nav.bar.dart';
-import 'package:capstone/screensforhome/home.dart';
+
+import 'package:capstone/default_screens/home.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone/styles/textstyle.dart';
 import 'package:capstone/styles/responsive_utils.dart';

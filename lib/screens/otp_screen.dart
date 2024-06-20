@@ -1,10 +1,11 @@
+import 'package:capstone/navigation/employer_navigation.dart';
 import 'package:capstone/screens/user_information.dart';
-import 'package:capstone/screensforhome/home_screen.dart';
+import 'package:capstone/screens/home_screen.dart';
 import 'package:capstone/styles/custom_button.dart';
 import 'package:capstone/styles/textstyle.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone/provider/auth_provider.dart';
-import 'package:capstone/screensforhome/home.dart';
+import 'package:capstone/default_screens/home.dart';
 // import 'package:capstone/screens/user_information_screen.dart';
 import 'package:capstone/utils/utils.dart';
 import 'package:pinput/pinput.dart';
@@ -147,33 +148,46 @@ class _OtpScreenState extends State<OtpScreen> {
       verificationId: widget.verificationId,
       userOtp: userOtp,
       onSuccess: () {
-        // checking whether user exists in the db
-        ap.checkExistingUser().then(
-          (value) async {
-            if (value == true) {
-              // user exists in our app
-              ap.getDataFromFirestore().then(
-                    (value) => ap.saveUserDataToSP().then(
-                          (value) => ap.setSignIn().then(
-                                (value) => Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const HomeScreen(),
-                                    ),
-                                    (route) => false),
-                              ),
-                        ),
+        // Check if user exists in the database
+        ap.checkExistingUser().then((value) async {
+          if (value == true) {
+            ap.getDataFromFirestore().then(
+              (userData) async {
+                await ap.saveUserDataToSP();
+                await ap.setSignIn();
+
+                // Fetch the user's role from the fetched data
+                String role = ap.userModel.role;
+
+                // Navigate to the designated page based on the role
+                if (role == 'Employer') {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const EmployerNavigation(),
+                    ),
+                    (route) => false,
                   );
-            } else {
-              // new user
-              Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const UserInformation()),
-                  (route) => false);
-            }
-          },
-        );
+                } else if (role == 'Job Hunter') {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HomePage(),
+                    ),
+                    (route) => false,
+                  );
+                } else {
+                  // new user
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const UserInformation()),
+                      (route) => false);
+                }
+              },
+            );
+          }
+        });
       },
     );
   }

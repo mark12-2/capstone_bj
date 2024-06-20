@@ -40,29 +40,28 @@ class AuthProvider extends ChangeNotifier {
   // signin
   // put condition if user exists or not...
   void signInWithPhone(BuildContext context, String phoneNumber) async {
-    try {
-      await _firebaseAuth.verifyPhoneNumber(
-          phoneNumber: phoneNumber,
-          verificationCompleted:
-              (PhoneAuthCredential phoneAuthCredential) async {
-            await _firebaseAuth.signInWithCredential(phoneAuthCredential);
-          },
-          verificationFailed: (error) {
-            throw Exception(error.message);
-          },
-          codeSent: (verificationId, forceResendingToken) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => OtpScreen(verificationId: verificationId),
-              ),
-            );
-          },
-          codeAutoRetrievalTimeout: (verificationId) {});
-    } on FirebaseAuthException catch (e) {
-      showSnackBar(context, e.message.toString());
-    }
+  try {
+    await _firebaseAuth.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        verificationCompleted: (PhoneAuthCredential phoneAuthCredential) async {
+          await _firebaseAuth.signInWithCredential(phoneAuthCredential);
+        },
+        verificationFailed: (error) {
+          showSnackBar(context, "Verification failed: ${error.message}");
+        },
+        codeSent: (verificationId, forceResendingToken) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OtpScreen(verificationId: verificationId),
+            ),
+          );
+        },
+        codeAutoRetrievalTimeout: (verificationId) {});
+  } on FirebaseAuthException catch (e) {
+    showSnackBar(context, e.message.toString());
   }
+}
 
 // verify otp
   void verifyOtp({
@@ -149,7 +148,7 @@ class AuthProvider extends ChangeNotifier {
     return downloadUrl;
   }
 
-
+// fetching data fram firestore
 Future getDataFromFirestore() async {
     await _firebaseFirestore
         .collection("users")

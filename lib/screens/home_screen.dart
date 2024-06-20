@@ -13,7 +13,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    final ap = Provider.of<AuthProvider>(context, listen: false);
+    final userLoggedIn = Provider.of<AuthProvider>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(
@@ -22,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             onPressed: () {
-              ap.userSignOut().then(
+              userLoggedIn.userSignOut().then(
                     (value) => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -42,15 +42,15 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           CircleAvatar(
             backgroundColor: Colors.purple,
-            backgroundImage: NetworkImage(ap.userModel.profilePic),
+            backgroundImage: NetworkImage(userLoggedIn.userModel.profilePic),
             radius: 50,
           ),
           const SizedBox(height: 20),
-          Text(ap.userModel.name),
-          Text(ap.userModel.phoneNumber),
-          Text(ap.userModel.email),
-          Text(ap.userModel.birthdate),          
-          Text(ap.userModel.address),
+          Text(userLoggedIn.userModel.name),
+          Text(userLoggedIn.userModel.phoneNumber),
+          Text(userLoggedIn.userModel.email),
+          Text(userLoggedIn.userModel.birthdate),          
+          Text(userLoggedIn.userModel.address),
         ],
       )),
     );

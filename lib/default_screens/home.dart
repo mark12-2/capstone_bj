@@ -1,8 +1,10 @@
-import 'package:capstone/nav/nav.bar.dart';
+import 'package:capstone/provider/auth_provider.dart';
+import 'package:capstone/screens/signin.dart';
 import 'package:flutter/material.dart';
-import 'package:capstone/screensforhome/notification.dart';
+import 'package:capstone/default_screens/notification.dart';
 import 'package:capstone/styles/textstyle.dart';
 import 'package:capstone/styles/responsive_utils.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,11 +15,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final ScrollController _scrollController = ScrollController();
-  bool _showCommentInput =
-      false; // Flag to control the visibility of the comment input
-  final TextEditingController _commentController =
-      TextEditingController(); // Controller for the comment input
 
+  bool _showCommentInput = false;
+  final TextEditingController _commentController = TextEditingController();
   @override
   void dispose() {
     _scrollController.dispose();
@@ -26,31 +26,45 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final userLoggedIn = Provider.of<AuthProvider>(context, listen: false);
+
     return Scaffold(
       appBar: AppBar(
-        leading: GestureDetector(
-          onTap: () {
-            _scrollController.animateTo(
-              0.0,
-              duration: const Duration(milliseconds: 500),
-              curve: Curves.easeOut,
-            );
-          },
-          child: Image.asset('assets/images/bluejobs.png'),
-        ),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.notifications),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const NotificationsPage()),
+          leading: GestureDetector(
+            onTap: () {
+              _scrollController.animateTo(
+                0.0,
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.easeOut,
               );
             },
+            child: Image.asset('assets/images/bluejobs.png'),
           ),
-        ],
-      ),
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.notifications),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const NotificationsPage()),
+                );
+              },
+            ),
+            IconButton(
+              onPressed: () {
+                userLoggedIn.userSignOut().then(
+                      (value) => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SignInPage(),
+                        ),
+                      ),
+                    );
+              },
+              icon: const Icon(Icons.exit_to_app),
+            ),
+          ]),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(
             15.0, 20.0, 15.0, 20.0), // Adjust padding as needed
@@ -299,14 +313,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
-      ),
-      bottomNavigationBar: NavBar(
-        onItemSelected: (index) {
-          // Handle navigation based on the selected index
-          // For example, you could use Navigator.push or some state management solution to switch pages
-          print("Selected index: $index");
-        },
-        selectedIndex: 0, // Pass the currently selected index
       ),
     );
   }
