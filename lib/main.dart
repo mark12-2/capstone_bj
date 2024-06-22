@@ -2,10 +2,10 @@ import 'package:capstone/firebase_options.dart';
 import 'package:capstone/provider/auth_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:capstone/screens/signin.dart';
+import 'package:capstone/screens_for_auth/signin.dart';
 import 'package:provider/provider.dart';
 
-// firebase connection 
+// firebase connection
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -39,4 +39,4 @@ class ThisApp extends StatelessWidget {
 
 //Flutter Routing Map Leaflet
 //Flutter Firebase Phone Auth Tutorial For Beginners | Firestore, Firebase Storage, Auth (Latest)
-//keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android 
+//keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android

@@ -1,5 +1,5 @@
 import 'package:capstone/provider/auth_provider.dart';
-import 'package:capstone/screens/signin.dart';
+import 'package:capstone/screens_for_auth/signin.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone/default_screens/notification.dart';
 import 'package:capstone/styles/textstyle.dart';
@@ -51,6 +51,7 @@ class _HomePageState extends State<HomePage> {
                 );
               },
             ),
+            // temporary sign out (should be in profile section)
             IconButton(
               onPressed: () {
                 userLoggedIn.userSignOut().then(
@@ -65,9 +66,32 @@ class _HomePageState extends State<HomePage> {
               icon: const Icon(Icons.exit_to_app),
             ),
           ]),
+          // post lists - from employer or job hunter
+          
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       body: Padding(
         padding: const EdgeInsets.fromLTRB(
-            15.0, 20.0, 15.0, 20.0), // Adjust padding as needed
+            15.0, 20.0, 15.0, 20.0), 
         child: CustomScrollView(
           controller: _scrollController,
           slivers: <Widget>[
@@ -79,9 +103,9 @@ class _HomePageState extends State<HomePage> {
                     borderRadius: BorderRadius.circular(5),
                   ),
                   elevation:
-                      4.0, // Add a slight shadow for better card separation
+                      4.0, 
                   margin: const EdgeInsets.fromLTRB(
-                      0.0, 10.0, 0.0, 10.0), // Remove margin for inner padding
+                      0.0, 10.0, 0.0, 10.0), 
                   child: Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: Column(
@@ -176,6 +200,13 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
+
+
+
+
+
+
+
                 // Add more cards here as needed
                 Card(
                   color: const Color.fromARGB(255, 255, 255, 255),

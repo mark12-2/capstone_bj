@@ -1,6 +1,7 @@
 import 'package:capstone/navigation/employer_navigation.dart';
-import 'package:capstone/screens/user_information.dart';
-import 'package:capstone/screens/home_screen.dart';
+import 'package:capstone/navigation/jobhunter_navigation.dart';
+import 'package:capstone/screens_for_auth/user_information.dart';
+import 'package:capstone/screens_for_auth/home_screen.dart';
 import 'package:capstone/styles/custom_button.dart';
 import 'package:capstone/styles/textstyle.dart';
 import 'package:flutter/material.dart';
@@ -172,18 +173,31 @@ class _OtpScreenState extends State<OtpScreen> {
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const HomePage(),
+                      builder: (context) => const JobhunterNavigation(),
                     ),
                     (route) => false,
                   );
-                } else {
-                  // new user
-                  Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const UserInformation()),
-                      (route) => false);
                 }
+              },
+            );
+          } else {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('Welcome'),
+                  content: const Text(
+                      'It looks like you\'re new here. Please complete your profile to get started.'),
+                  actions: <Widget>[
+                    TextButton(
+                      child: const Text('Complete Profile'),
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => const UserInformation()));
+                      },
+                    ),
+                  ],
+                );
               },
             );
           }

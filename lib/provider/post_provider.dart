@@ -1,12 +1,12 @@
-import 'package:capstone/model/jobpost_model.dart';
+import 'package:capstone/model/post_model.dart';
 import 'package:capstone/model/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
-class JobPostProvider with ChangeNotifier {
-  final CollectionReference jobPosts =
-      FirebaseFirestore.instance.collection('Job Post');
+class PostProvider with ChangeNotifier {
+  final CollectionReference posts =
+      FirebaseFirestore.instance.collection('Posts');
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   // fetch userlogged in details from Firestore
@@ -35,34 +35,32 @@ class JobPostProvider with ChangeNotifier {
   }
 
   // method to add a job post
- Future<DocumentReference> addDetail(JobPost jobpost) async {
+ Future<DocumentReference> addPost(Post post) async {
   UserModel? currentUserDetails = await fetchCurrentUserDetails();
 
   if (currentUserDetails == null) {
     throw Exception('Current user details could not be fetched.');
   }
 
-  return jobPosts.add({
+  return posts.add({
     "name": currentUserDetails.name,
     "email": currentUserDetails.email,
     "role": currentUserDetails.role,
     "profilePic": currentUserDetails.profilePic,
-    "title": jobpost.title,
-    "description": jobpost.description,
-    "type": jobpost.type,
-    "location": jobpost.location,
-    "rate": jobpost.rate,
+    "description": post.postDescription,
+    "type": post.typeOfJob,
+    "rate": post.yourRate,
     "timestamp": Timestamp.now(),
   });
 }
 
   // read the post from firestore
-  Stream<QuerySnapshot> getJobPostsStream() {
-    final jobPostsStream = FirebaseFirestore.instance
-        .collection('Job Post')
+  Stream<QuerySnapshot> getPostsStream() {
+    final postsStream = FirebaseFirestore.instance
+        .collection('Posts')
         .orderBy("timestamp", descending: true)
         .snapshots();
 
-    return jobPostsStream;
+    return postsStream;
   }
 }

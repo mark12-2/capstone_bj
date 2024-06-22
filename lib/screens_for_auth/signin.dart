@@ -1,7 +1,7 @@
 import 'package:capstone/provider/auth_provider.dart';
-import 'package:capstone/screens/otp_screen.dart';
-import 'package:capstone/screens/signup.dart';
-import 'package:capstone/screens/user_information.dart';
+import 'package:capstone/screens_for_auth/otp_screen.dart';
+import 'package:capstone/screens_for_auth/signup.dart';
+import 'package:capstone/screens_for_auth/user_information.dart';
 import 'package:capstone/default_screens/home.dart';
 import 'package:capstone/styles/custom_button.dart';
 import 'package:capstone/styles/textstyle.dart';

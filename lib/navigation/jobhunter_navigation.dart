@@ -1,24 +1,26 @@
-import 'package:capstone/default_screens/mapping.dart';
+import 'package:capstone/default_screens/home_xample.dart';
 import 'package:capstone/default_screens/messaging.dart';
 import 'package:capstone/default_screens/search.dart';
 import 'package:capstone/employer_screens/create_jobpost.dart';
 import 'package:capstone/employer_screens/employer_profile.dart';
+import 'package:capstone/jobhunter_screens/create_post.dart';
 import 'package:capstone/screens_for_auth/home_screen.dart';
+// import 'package:capstone/screens_for_auth/home_screen.dart';
 import 'package:flutter/material.dart';
 
-class EmployerNavigation extends StatefulWidget {
-  const EmployerNavigation({super.key});
+class JobhunterNavigation extends StatefulWidget {
+  const JobhunterNavigation({super.key});
 
   @override
-  State<EmployerNavigation> createState() => _EmployerNavigationState();
+  State<JobhunterNavigation> createState() => _JobhunterNavigationState();
 }
 
-class _EmployerNavigationState extends State<EmployerNavigation> {
+class _JobhunterNavigationState extends State<JobhunterNavigation> {
   int _selectedIndex = 0;
   List<Widget> defaultScreens = <Widget>[
     const HomeScreen(),
-    // const Mapping(),
-    const CreateJobPostPage(),
+    const SearchPage(),
+    const PostPage(),
     const MessagingPage(),
     const EmployerProfile(),
   ];
@@ -51,8 +53,8 @@ class _EmployerNavigationState extends State<EmployerNavigation> {
             label: 'Profile',
           ),
         ],
-        unselectedItemColor: Color.fromARGB(255, 19, 8, 8),
-        selectedItemColor: Color.fromARGB(255, 7, 16, 69),
+        unselectedItemColor: const Color.fromARGB(255, 19, 8, 8),
+        selectedItemColor: const Color.fromARGB(255, 7, 16, 69),
         currentIndex: _selectedIndex,
         onTap: (value) {
           setState(() {

@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:capstone/address/addresses.dart';
+import 'package:capstone/dropdowns/addresses.dart';
 import 'package:capstone/model/user_model.dart';
 import 'package:capstone/provider/auth_provider.dart';
 import 'package:capstone/default_screens/home.dart';
-import 'package:capstone/screens/home_screen.dart';
+import 'package:capstone/screens_for_auth/home_screen.dart';
 import 'package:capstone/styles/custom_button.dart';
 import 'package:capstone/styles/custom_theme.dart';
 import 'package:capstone/styles/responsive_utils.dart';
@@ -321,6 +321,7 @@ class _UserInformationState extends State<UserInformation> {
         ));
   }
 
+  // storing data function
   void storeData() async {
     final ap = Provider.of<AuthProvider>(context, listen: false);
     UserModel userModel = UserModel(
