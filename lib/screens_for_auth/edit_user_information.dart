@@ -2,16 +2,16 @@ import 'dart:io';
 
 import 'package:capstone/dropdowns/addresses.dart';
 import 'package:capstone/model/user_model.dart';
+import 'package:capstone/navigation/employer_navigation.dart';
+import 'package:capstone/navigation/jobhunter_navigation.dart';
 import 'package:capstone/provider/auth_provider.dart';
-import 'package:capstone/default_screens/home.dart';
-import 'package:capstone/screens_for_auth/home_screen.dart';
+import 'package:capstone/default_screens/home_screen.dart';
 import 'package:capstone/styles/custom_button.dart';
 import 'package:capstone/styles/custom_theme.dart';
 import 'package:capstone/styles/responsive_utils.dart';
 import 'package:capstone/styles/textstyle.dart';
 import 'package:capstone/utils/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class EditUserInformation extends StatefulWidget {
@@ -287,17 +287,29 @@ class _EditUserInformationState extends State<EditUserInformation> {
           userModel: userModel,
           profilePic: image!,
           onSuccess: () {
-            ap.saveUserDataToSP().then(
-                  (value) => ap.setSignIn().then(
-                        (value) => Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const HomeScreen(),
-                          ),
-                          (route) => false,
-                        ),
-                      ),
-                );
+          ap.saveUserDataToSP().then((value) {
+            ap.setSignIn();
+            String role = ap.userModel.role;
+
+            // Navigate to the designated page based on the role
+            if (role == 'Employer') {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const EmployerNavigation(),
+                ),
+                (route) => false,
+              );
+            } else if (role == 'Job Hunter') {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const JobhunterNavigation(),
+                ),
+                (route) => false,
+              );
+            }
+          });
           },
         );
       } else {

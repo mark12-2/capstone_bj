@@ -35,7 +35,7 @@ class JobPostProvider with ChangeNotifier {
   }
 
   // method to add a job post
- Future<DocumentReference> addDetail(JobPost jobpost) async {
+ Future<DocumentReference> addJobPost(JobPost jobpost) async {
   UserModel? currentUserDetails = await fetchCurrentUserDetails();
 
   if (currentUserDetails == null) {

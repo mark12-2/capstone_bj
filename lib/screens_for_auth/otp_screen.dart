@@ -1,7 +1,7 @@
 import 'package:capstone/navigation/employer_navigation.dart';
 import 'package:capstone/navigation/jobhunter_navigation.dart';
 import 'package:capstone/screens_for_auth/user_information.dart';
-import 'package:capstone/screens_for_auth/home_screen.dart';
+import 'package:capstone/default_screens/home_screen.dart';
 import 'package:capstone/styles/custom_button.dart';
 import 'package:capstone/styles/textstyle.dart';
 import 'package:flutter/material.dart';
@@ -114,7 +114,8 @@ class _OtpScreenState extends State<OtpScreen> {
                             style: CustomTextStyle.regularText.copyWith(
                               color: Colors.white,
                             ),
-                          )),
+                          )
+                          ),
                       const SizedBox(height: 20),
                       const Text(
                         "Didn't receive any code?",

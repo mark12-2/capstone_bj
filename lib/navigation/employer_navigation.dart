@@ -1,9 +1,7 @@
-import 'package:capstone/default_screens/mapping.dart';
+import 'package:capstone/default_screens/home.dart';
 import 'package:capstone/default_screens/messaging.dart';
-import 'package:capstone/default_screens/search.dart';
 import 'package:capstone/employer_screens/create_jobpost.dart';
 import 'package:capstone/employer_screens/employer_profile.dart';
-import 'package:capstone/screens_for_auth/home_screen.dart';
 import 'package:flutter/material.dart';
 
 class EmployerNavigation extends StatefulWidget {
@@ -16,8 +14,8 @@ class EmployerNavigation extends StatefulWidget {
 class _EmployerNavigationState extends State<EmployerNavigation> {
   int _selectedIndex = 0;
   List<Widget> defaultScreens = <Widget>[
-    const HomeScreen(),
-    // const Mapping(),
+    const HomePage(),
+    const SearchBar(),
     const CreateJobPostPage(),
     const MessagingPage(),
     const EmployerProfile(),

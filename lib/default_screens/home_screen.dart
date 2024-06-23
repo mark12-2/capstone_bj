@@ -1,7 +1,7 @@
+import 'package:capstone/default_screens/employer_jobpost_view.dart';
 import 'package:capstone/provider/auth_provider.dart';
 import 'package:capstone/screens_for_auth/edit_user_information.dart';
 import 'package:capstone/screens_for_auth/signin.dart';
-import 'package:capstone/screens_for_auth/user_information.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -100,6 +100,17 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
             child: Text('Delete My Account'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const EmployerJobpostView(),
+                ),
+              );
+            },
+            child: const Text("view post"),
           ),
         ],
       )),

@@ -1,11 +1,13 @@
-import 'package:capstone/default_screens/home.dart';
+import 'package:capstone/default_screens/home_screen.dart';
 import 'package:capstone/dropdowns/types_of_jobs.dart';
 import 'package:capstone/model/post_model.dart';
+import 'package:capstone/navigation/jobhunter_navigation.dart';
 import 'package:capstone/provider/post_provider.dart';
 import 'package:capstone/styles/custom_theme.dart';
 import 'package:capstone/styles/responsive_utils.dart';
 import 'package:capstone/styles/textstyle.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class PostPage extends StatefulWidget {
   const PostPage({super.key});
@@ -22,31 +24,12 @@ class _PostPageState extends State<PostPage> {
   final _typeController = TextEditingController();
   final _rateController = TextEditingController();
 
-  //posting
-  void addPost() {
-    if (_descriptionController.text.isNotEmpty &&
-        _typeController.text.isNotEmpty &&
-        _rateController.text.isNotEmpty) {
-      String description = _descriptionController.text;
-      String type = _typeController.text;
-      String rate = _rateController.text;
-      // add the details
-      var postDetails = Post(
-        postDescription: description,
-        typeOfJob: type,
-        yourRate: rate,
-      );
-      
-      createdPost.addPost(postDetails);
-    }
-  }
-
   final _descriptionFocusNode = FocusNode();
   final _typeFocusNode = FocusNode();
   final _rateFocusNode = FocusNode();
 
-  final bool _isDescriptionFocused = false;
-  final bool _isRateFocused = false;
+  bool _isDescriptionFocused = false;
+  bool _isRateFocused = false;
   String? _typeSelection;
 
   @override
@@ -61,9 +44,23 @@ class _PostPageState extends State<PostPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _descriptionFocusNode.addListener(_onFocusChange);
+    _rateFocusNode.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    setState(() {
+      _isDescriptionFocused = _descriptionFocusNode.hasFocus;
+      _isRateFocused = _rateFocusNode.hasFocus;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 100),
+      padding: const EdgeInsets.only(top: 100, left: 10.0, right: 10.0),
       child: SingleChildScrollView(
         child: Column(
           children: [
@@ -76,11 +73,13 @@ class _PostPageState extends State<PostPage> {
               ),
             ),
             const SizedBox(height: 30),
-        
             TextField(
               controller: _descriptionController,
               focusNode: _descriptionFocusNode,
               decoration: customInputDecoration('Description'),
+              maxLines: 20,
+              minLines: 1,
+              keyboardType: TextInputType.multiline,
             ),
             if (_isDescriptionFocused)
               const Padding(
@@ -91,36 +90,13 @@ class _PostPageState extends State<PostPage> {
                 ),
               ),
             const SizedBox(height: 20),
-            
-            TextField(
-              controller: _typeController,
-              focusNode: _typeFocusNode,
-              decoration: customInputDecoration('Type of Job'),
-            ),
-            if (_typeFocusNode.hasFocus)
-              DropdownButton<String>(
-                value: _typeSelection,
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _typeSelection = newValue;
-                  });
-                },
-                items: TypesOfJobs.allJobTypes
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-            const SizedBox(height: 20),
-
-        
             TextField(
               controller: _rateController,
               focusNode: _rateFocusNode,
               decoration: customInputDecoration('Rate'),
-              // keyboardType: TextInputType.number,
+              maxLines: 20,
+              minLines: 1,
+              keyboardType: TextInputType.multiline,
             ),
             if (_isRateFocused)
               const Padding(
@@ -131,10 +107,34 @@ class _PostPageState extends State<PostPage> {
                 ),
               ),
             const SizedBox(height: 20),
+            const Padding(
+              padding: EdgeInsets.only(
+                right: 280.0,
+              ),
+              child: Text(
+                ('Type of Job'),
+              ),
+            ),
+            DropdownButton<String>(
+              value: _typeSelection,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _typeSelection = newValue;
+                });
+              },
+              items: TypesOfJobs.allJobTypes
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 40),
             Row(
               children: [
                 ElevatedButton(
-                  onPressed: addPost,
+                  onPressed: () => createPost(context),
                   child: const Text('Post'),
                 ),
                 ElevatedButton(
@@ -145,7 +145,7 @@ class _PostPageState extends State<PostPage> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const HomePage()));
+                            builder: (context) => const JobhunterNavigation()));
                   },
                   child: const Text('Cancel'),
                 )
@@ -155,5 +155,33 @@ class _PostPageState extends State<PostPage> {
         ),
       ),
     );
+  }
+
+  //posting
+  void createPost(BuildContext context) async {
+    if (_descriptionController.text.isNotEmpty &&
+        _typeSelection != null &&
+        _rateController.text.isNotEmpty) {
+      String description = _descriptionController.text;
+      String type = _typeSelection!;
+      String rate = _rateController.text;
+      var postDetails = Post(
+        postDescription: description,
+        typeOfJob: type,
+        yourRate: rate,
+      );
+
+      try {
+        await Provider.of<PostProvider>(context, listen: false)
+            .addPost(postDetails);
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const JobhunterNavigation()),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to create post: $e')),
+        );
+      }
+    }
   }
 }

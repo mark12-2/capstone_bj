@@ -1,11 +1,13 @@
-import 'package:capstone/default_screens/home.dart';
 import 'package:capstone/dropdowns/types_of_jobs.dart';
 import 'package:capstone/model/jobpost_model.dart';
+import 'package:capstone/navigation/employer_navigation.dart';
 import 'package:capstone/provider/jobpost_provider.dart';
 import 'package:capstone/styles/custom_theme.dart';
 import 'package:capstone/styles/responsive_utils.dart';
 import 'package:capstone/styles/textstyle.dart';
 import 'package:flutter/material.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:provider/provider.dart';
 
 class CreateJobPostPage extends StatefulWidget {
   const CreateJobPostPage({super.key});
@@ -20,35 +22,10 @@ class _CreateJobPostPageState extends State<CreateJobPostPage> {
   // text controllers
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
-  final _typeController = TextEditingController();
   final _locationController = TextEditingController();
   final _rateController = TextEditingController();
 
-  //post job post
-  void addJobPost() {
-    if (_titleController.text.isNotEmpty &&
-        _descriptionController.text.isNotEmpty &&
-        _typeController.text.isNotEmpty &&
-        _locationController.text.isNotEmpty &&
-        _rateController.text.isNotEmpty) {
-      String title = _titleController.text;
-      String description = _descriptionController.text;
-      String type = _typeController.text;
-      String location = _locationController.text;
-      String rate = _rateController.text;
-      // add the details
-      var jobPost = JobPost(
-        title: title,
-        description: description,
-        type: type,
-        location: location,
-        rate: rate,
-      );
-
-      // Now pass the JobPost object to the addDetail method
-      jobpostdetails.addDetail(jobPost);
-    }
-  }
+  List<LatLng> routePoints = [];
 
   final _titleFocusNode = FocusNode();
   final _descriptionFocusNode = FocusNode();
@@ -56,17 +33,16 @@ class _CreateJobPostPageState extends State<CreateJobPostPage> {
   final _locationFocusNode = FocusNode();
   final _rateFocusNode = FocusNode();
 
-  final bool _isTitleFocused = false;
-  final bool _isDescriptionFocused = false;
-  final bool _isLocationFocused = false;
-  final bool _isRateFocused = false;
+  bool _isTitleFocused = false;
+  bool _isDescriptionFocused = false;
+  bool _isLocationFocused = false;
+  bool _isRateFocused = false;
   String? _typeSelection;
 
   @override
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
-    _typeController.dispose();
     _locationController.dispose();
     _rateController.dispose();
     _titleFocusNode.dispose();
@@ -78,9 +54,28 @@ class _CreateJobPostPageState extends State<CreateJobPostPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _titleFocusNode.addListener(_onFocusChange);
+    _descriptionFocusNode.addListener(_onFocusChange);
+    _typeFocusNode.addListener(_onFocusChange);
+    _locationFocusNode.addListener(_onFocusChange);
+    _rateFocusNode.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    setState(() {
+      _isTitleFocused = _titleFocusNode.hasFocus;
+      _isDescriptionFocused = _descriptionFocusNode.hasFocus;
+      _isLocationFocused = _locationFocusNode.hasFocus;
+      _isRateFocused = _rateFocusNode.hasFocus;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 100),
+      padding: const EdgeInsets.only(top: 100, left: 10.0, right: 10.0),
       child: SingleChildScrollView(
         child: Column(
           children: [
@@ -97,6 +92,9 @@ class _CreateJobPostPageState extends State<CreateJobPostPage> {
               controller: _titleController,
               focusNode: _titleFocusNode,
               decoration: customInputDecoration('Title'),
+              maxLines: 10,
+              minLines: 1,
+              keyboardType: TextInputType.multiline,
             ),
             if (_isTitleFocused)
               const Padding(
@@ -111,6 +109,9 @@ class _CreateJobPostPageState extends State<CreateJobPostPage> {
               controller: _descriptionController,
               focusNode: _descriptionFocusNode,
               decoration: customInputDecoration('Description'),
+              maxLines: 20,
+              minLines: 1,
+              keyboardType: TextInputType.multiline,
             ),
             if (_isDescriptionFocused)
               const Padding(
@@ -120,51 +121,16 @@ class _CreateJobPostPageState extends State<CreateJobPostPage> {
                   style: TextStyle(color: Colors.grey, fontSize: 12),
                 ),
               ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _typeController,
-              focusNode: _typeFocusNode,
-              decoration: customInputDecoration('Type of Job'),
-            ),
-            if (_typeFocusNode.hasFocus)
-              DropdownButton<String>(
-                value: _typeSelection,
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _typeSelection = newValue;
-                  });
-                },
-                items: TypesOfJobs.allJobTypes
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-            const SizedBox(height: 20),
 
-            // add leaflet for job location (mapping feature)
-            TextField(
-              controller: _locationController,
-              focusNode: _locationFocusNode,
-              decoration: customInputDecoration('Location'),
-            ),
-            if (_isLocationFocused)
-              const Padding(
-                padding: EdgeInsets.only(top: 8.0),
-                child: Text(
-                  'Enter the location.',
-                  style: TextStyle(color: Colors.grey, fontSize: 12),
-                ),
-              ),
             const SizedBox(height: 20),
 
             TextField(
               controller: _rateController,
               focusNode: _rateFocusNode,
               decoration: customInputDecoration('Rate'),
-              // keyboardType: TextInputType.number,
+              maxLines: 10,
+              minLines: 1,
+              keyboardType: TextInputType.multiline,
             ),
             if (_isRateFocused)
               const Padding(
@@ -174,22 +140,81 @@ class _CreateJobPostPageState extends State<CreateJobPostPage> {
                   style: TextStyle(color: Colors.grey, fontSize: 12),
                 ),
               ),
+
             const SizedBox(height: 20),
+
+            const Padding(
+              padding: EdgeInsets.only(
+                right: 280.0,
+              ),
+              child: Text(
+                ('Type of Job'),
+              ),
+            ),
+            DropdownButton<String>(
+              value: _typeSelection,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _typeSelection = newValue;
+                });
+              },
+              items: TypesOfJobs.allJobTypes
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
+
+            const SizedBox(height: 20),
+
+            // add leaflet for job location (mapping feature)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextField(
+                  controller: _locationController,
+                  focusNode: _locationFocusNode,
+                  decoration: customInputDecoration('Location'),
+                  maxLines: 5,
+                  minLines: 1,
+                  keyboardType: TextInputType.multiline,
+                ),
+                if (_isLocationFocused)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      'Enter address Ex. Illawod Poblacion, Legazpi City',
+                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                    ),
+                  ),
+                // ElevatedButton(
+                //   onPressed: () =>
+                //       showLocationPickerModal(context, _locationController),
+                //   child: const Text('Show Location'),
+                // ),
+              ],
+            ),
+
+            const SizedBox(height: 20),
+
             Row(
               children: [
                 ElevatedButton(
-                  onPressed: addJobPost,
+                  onPressed: () => addJobPost(context),
                   child: const Text('Post'),
                 ),
                 ElevatedButton(
                   onPressed: () {
                     _titleController.clear();
                     _descriptionController.clear();
-                    _typeController.clear();
                     _locationController.clear();
                     _rateController.clear();
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => const HomePage()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const EmployerNavigation()));
                   },
                   child: const Text('Cancel'),
                 )
@@ -199,5 +224,41 @@ class _CreateJobPostPageState extends State<CreateJobPostPage> {
         ),
       ),
     );
+  }
+
+//post job post
+  void addJobPost(BuildContext context) async {
+    if (_titleController.text.isNotEmpty &&
+        _descriptionController.text.isNotEmpty &&
+        _typeSelection != null &&
+        _locationController.text.isNotEmpty &&
+        _rateController.text.isNotEmpty) {
+      String title = _titleController.text;
+      String description = _descriptionController.text;
+      String type = _typeSelection!;
+      String location = _locationController.text;
+      String rate = _rateController.text;
+      // add the details
+      var jobPostDetails = JobPost(
+        title: title,
+        description: description,
+        type: type,
+        location: location,
+        rate: rate,
+      );
+
+      try {
+        await Provider.of<JobPostProvider>(context, listen: false)
+            .addJobPost(jobPostDetails);
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const EmployerNavigation()),
+        );
+      } catch (e) {
+        // Handle errors here
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to create post: $e')),
+        );
+      }
+    }
   }
 }

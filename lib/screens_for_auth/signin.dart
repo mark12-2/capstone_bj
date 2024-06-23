@@ -110,12 +110,15 @@ class _SignInPageState extends State<SignInPage> {
                               });
                             });
                       },
-                      child: Text(
-                        "${selectedCountry.flagEmoji} + ${selectedCountry.phoneCode}",
-                        style: const TextStyle(
-                            fontSize: 18,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w400),
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 2.0),
+                        child: Text(
+                          "${selectedCountry.flagEmoji} + ${selectedCountry.phoneCode}",
+                          style: const TextStyle(
+                              fontSize: 17,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w300),
+                        ),
                       ),
                     ),
                   ),

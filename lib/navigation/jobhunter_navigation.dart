@@ -1,11 +1,8 @@
-import 'package:capstone/default_screens/home_xample.dart';
+import 'package:capstone/default_screens/home.dart';
 import 'package:capstone/default_screens/messaging.dart';
 import 'package:capstone/default_screens/search.dart';
-import 'package:capstone/employer_screens/create_jobpost.dart';
 import 'package:capstone/employer_screens/employer_profile.dart';
 import 'package:capstone/jobhunter_screens/create_post.dart';
-import 'package:capstone/screens_for_auth/home_screen.dart';
-// import 'package:capstone/screens_for_auth/home_screen.dart';
 import 'package:flutter/material.dart';
 
 class JobhunterNavigation extends StatefulWidget {
@@ -18,7 +15,7 @@ class JobhunterNavigation extends StatefulWidget {
 class _JobhunterNavigationState extends State<JobhunterNavigation> {
   int _selectedIndex = 0;
   List<Widget> defaultScreens = <Widget>[
-    const HomeScreen(),
+    const HomePage(),
     const SearchPage(),
     const PostPage(),
     const MessagingPage(),

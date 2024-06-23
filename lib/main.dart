@@ -1,5 +1,7 @@
 import 'package:capstone/firebase_options.dart';
 import 'package:capstone/provider/auth_provider.dart';
+import 'package:capstone/provider/jobpost_provider.dart';
+import 'package:capstone/provider/post_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone/screens_for_auth/signin.dart';
@@ -23,6 +25,8 @@ class ThisApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => PostProvider()),
+        ChangeNotifierProvider(create: (_) => JobPostProvider()),
       ],
       child: MaterialApp(
         title: 'Blue Jobs',
