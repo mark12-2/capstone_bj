@@ -1,5 +1,5 @@
 import 'package:capstone/mapping/location_service.dart';
-import 'package:capstone/provider/jobpost_provider.dart';
+import 'package:capstone/provider/posts_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
@@ -12,7 +12,7 @@ class EmployerJobpostView extends StatefulWidget {
 }
 
 class _EmployerJobpostViewState extends State<EmployerJobpostView> {
-  final JobPostProvider jobpostdetails = JobPostProvider();
+  final PostsProvider jobpostdetails = PostsProvider();
 
   @override
   Widget build(BuildContext context) {
@@ -20,14 +20,14 @@ class _EmployerJobpostViewState extends State<EmployerJobpostView> {
       appBar: AppBar(
         title: const Text("Fetching post"),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: jobpostdetails.getJobPostsStream(),
+        stream: jobpostdetails.getPostsStream(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -71,12 +71,17 @@ class _EmployerJobpostViewState extends State<EmployerJobpostView> {
                                 Text("Location: "),
                                 GestureDetector(
                                   onTap: () async {
-                                    final locations = await locationFromAddress(location);
+                                    final locations =
+                                        await locationFromAddress(location);
                                     final lat = locations[0].latitude;
                                     final lon = locations[0].longitude;
-                                    showLocationPickerModal(context, TextEditingController(text: '$lat, $lon'));
+                                    showLocationPickerModal(
+                                        context,
+                                        TextEditingController(
+                                            text: '$lat, $lon'));
                                   },
-                                  child: Text(location, style: TextStyle(color: Colors.blue)),
+                                  child: Text(location,
+                                      style: const TextStyle(color: Colors.blue)),
                                 ),
                               ],
                             ),

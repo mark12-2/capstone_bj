@@ -15,7 +15,7 @@ class AuthProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
   String? _uid;
-  String get uid => _uid!;
+  String get uid => _uid?? '';
   UserModel? _userModel;
   UserModel get userModel => _userModel!;
 
@@ -144,7 +144,7 @@ class AuthProvider extends ChangeNotifier {
     String? email,
     String? address,
     File? profilePic,
-    required String uid, // Add UID as a parameter
+    required String uid, 
     required Function onSuccess,
   }) async {
     _isLoading = true;

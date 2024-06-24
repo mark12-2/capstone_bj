@@ -1,7 +1,6 @@
-import 'package:capstone/dropdowns/types_of_jobs.dart';
-import 'package:capstone/model/jobpost_model.dart';
+import 'package:capstone/model/posts_model.dart';
 import 'package:capstone/navigation/employer_navigation.dart';
-import 'package:capstone/provider/jobpost_provider.dart';
+import 'package:capstone/provider/posts_provider.dart';
 import 'package:capstone/styles/custom_theme.dart';
 import 'package:capstone/styles/responsive_utils.dart';
 import 'package:capstone/styles/textstyle.dart';
@@ -18,11 +17,12 @@ class CreateJobPostPage extends StatefulWidget {
 
 class _CreateJobPostPageState extends State<CreateJobPostPage> {
   // firestore storage access
-  final JobPostProvider jobpostdetails = JobPostProvider();
+  final PostsProvider jobpostdetails = PostsProvider();
   // text controllers
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _locationController = TextEditingController();
+  final _typeController = TextEditingController();
   final _rateController = TextEditingController();
 
   List<LatLng> routePoints = [];
@@ -37,7 +37,7 @@ class _CreateJobPostPageState extends State<CreateJobPostPage> {
   bool _isDescriptionFocused = false;
   bool _isLocationFocused = false;
   bool _isRateFocused = false;
-  String? _typeSelection;
+  bool _isTypeFocused = false;
 
   @override
   void dispose() {
@@ -68,6 +68,7 @@ class _CreateJobPostPageState extends State<CreateJobPostPage> {
       _isTitleFocused = _titleFocusNode.hasFocus;
       _isDescriptionFocused = _descriptionFocusNode.hasFocus;
       _isLocationFocused = _locationFocusNode.hasFocus;
+      _isTypeFocused = _typeFocusNode.hasFocus;
       _isRateFocused = _rateFocusNode.hasFocus;
     });
   }
@@ -143,29 +144,23 @@ class _CreateJobPostPageState extends State<CreateJobPostPage> {
 
             const SizedBox(height: 20),
 
-            const Padding(
-              padding: EdgeInsets.only(
-                right: 280.0,
-              ),
-              child: Text(
-                ('Type of Job'),
-              ),
+            TextField(
+              controller: _typeController,
+              focusNode: _typeFocusNode,
+              decoration: customInputDecoration('Type of Job'),
+              maxLines: 10,
+              minLines: 1,
+              keyboardType: TextInputType.multiline,
             ),
-            DropdownButton<String>(
-              value: _typeSelection,
-              onChanged: (String? newValue) {
-                setState(() {
-                  _typeSelection = newValue;
-                });
-              },
-              items: TypesOfJobs.allJobTypes
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-            ),
+            if (_isTypeFocused)
+              const Padding(
+                padding: EdgeInsets.only(top: 8.0),
+                child: Text(
+                  'Example: Construction, Paint Job, Sales lady/boy, Laundry, Cook',
+                  style: TextStyle(color: Colors.grey, fontSize: 12),
+                ),
+              ),
+
 
             const SizedBox(height: 20),
 
@@ -230,16 +225,16 @@ class _CreateJobPostPageState extends State<CreateJobPostPage> {
   void addJobPost(BuildContext context) async {
     if (_titleController.text.isNotEmpty &&
         _descriptionController.text.isNotEmpty &&
-        _typeSelection != null &&
+        _typeController.text.isNotEmpty &&
         _locationController.text.isNotEmpty &&
         _rateController.text.isNotEmpty) {
       String title = _titleController.text;
       String description = _descriptionController.text;
-      String type = _typeSelection!;
+      String type = _typeController.text;
       String location = _locationController.text;
       String rate = _rateController.text;
       // add the details
-      var jobPostDetails = JobPost(
+      var jobPostDetails = Post(
         title: title,
         description: description,
         type: type,
@@ -248,8 +243,8 @@ class _CreateJobPostPageState extends State<CreateJobPostPage> {
       );
 
       try {
-        await Provider.of<JobPostProvider>(context, listen: false)
-            .addJobPost(jobPostDetails);
+        await Provider.of<PostsProvider>(context, listen: false)
+            .addPost(jobPostDetails);
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const EmployerNavigation()),
         );

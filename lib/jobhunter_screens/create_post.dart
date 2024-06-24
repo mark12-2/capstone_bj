@@ -1,8 +1,6 @@
-import 'package:capstone/default_screens/home_screen.dart';
-import 'package:capstone/dropdowns/types_of_jobs.dart';
-import 'package:capstone/model/post_model.dart';
+import 'package:capstone/model/posts_model.dart';
 import 'package:capstone/navigation/jobhunter_navigation.dart';
-import 'package:capstone/provider/post_provider.dart';
+import 'package:capstone/provider/posts_provider.dart';
 import 'package:capstone/styles/custom_theme.dart';
 import 'package:capstone/styles/responsive_utils.dart';
 import 'package:capstone/styles/textstyle.dart';
@@ -18,7 +16,7 @@ class PostPage extends StatefulWidget {
 
 class _PostPageState extends State<PostPage> {
   // firestore storage access
-  final PostProvider createdPost = PostProvider();
+  final PostsProvider createdPost = PostsProvider();
   // text controllers
   final _descriptionController = TextEditingController();
   final _typeController = TextEditingController();
@@ -30,7 +28,7 @@ class _PostPageState extends State<PostPage> {
 
   bool _isDescriptionFocused = false;
   bool _isRateFocused = false;
-  String? _typeSelection;
+  bool _isTypeFocused = false;
 
   @override
   void dispose() {
@@ -48,12 +46,14 @@ class _PostPageState extends State<PostPage> {
     super.initState();
     _descriptionFocusNode.addListener(_onFocusChange);
     _rateFocusNode.addListener(_onFocusChange);
+    _typeFocusNode.addListener(_onFocusChange);
   }
 
   void _onFocusChange() {
     setState(() {
       _isDescriptionFocused = _descriptionFocusNode.hasFocus;
       _isRateFocused = _rateFocusNode.hasFocus;
+      _isTypeFocused = _typeFocusNode.hasFocus;
     });
   }
 
@@ -73,6 +73,7 @@ class _PostPageState extends State<PostPage> {
               ),
             ),
             const SizedBox(height: 30),
+
             TextField(
               controller: _descriptionController,
               focusNode: _descriptionFocusNode,
@@ -89,7 +90,9 @@ class _PostPageState extends State<PostPage> {
                   style: TextStyle(color: Colors.grey, fontSize: 12),
                 ),
               ),
+
             const SizedBox(height: 20),
+
             TextField(
               controller: _rateController,
               focusNode: _rateFocusNode,
@@ -106,31 +109,28 @@ class _PostPageState extends State<PostPage> {
                   style: TextStyle(color: Colors.grey, fontSize: 12),
                 ),
               ),
+
             const SizedBox(height: 20),
-            const Padding(
-              padding: EdgeInsets.only(
-                right: 280.0,
-              ),
-              child: Text(
-                ('Type of Job'),
-              ),
+
+            TextField(
+              controller: _typeController,
+              focusNode: _typeFocusNode,
+              decoration: customInputDecoration('Type of Job'),
+              maxLines: 10,
+              minLines: 1,
+              keyboardType: TextInputType.multiline,
             ),
-            DropdownButton<String>(
-              value: _typeSelection,
-              onChanged: (String? newValue) {
-                setState(() {
-                  _typeSelection = newValue;
-                });
-              },
-              items: TypesOfJobs.allJobTypes
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-            ),
+            if (_isTypeFocused)
+              const Padding(
+                padding: EdgeInsets.only(top: 8.0),
+                child: Text(
+                  'Example: Construction, Paint Job, Sales lady/boy, Laundry, Cook',
+                  style: TextStyle(color: Colors.grey, fontSize: 12),
+                ),
+              ),
+
             const SizedBox(height: 40),
+
             Row(
               children: [
                 ElevatedButton(
@@ -160,19 +160,19 @@ class _PostPageState extends State<PostPage> {
   //posting
   void createPost(BuildContext context) async {
     if (_descriptionController.text.isNotEmpty &&
-        _typeSelection != null &&
+        _typeController.text.isNotEmpty &&
         _rateController.text.isNotEmpty) {
       String description = _descriptionController.text;
-      String type = _typeSelection!;
+      String type = _typeController.text;
       String rate = _rateController.text;
       var postDetails = Post(
-        postDescription: description,
-        typeOfJob: type,
-        yourRate: rate,
+        description: description,
+        type: type,
+        rate: rate,
       );
 
       try {
-        await Provider.of<PostProvider>(context, listen: false)
+        await Provider.of<PostsProvider>(context, listen: false)
             .addPost(postDetails);
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const JobhunterNavigation()),

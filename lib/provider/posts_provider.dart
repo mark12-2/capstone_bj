@@ -1,15 +1,14 @@
-import 'package:capstone/model/post_model.dart';
+import 'package:capstone/model/posts_model.dart';
 import 'package:capstone/model/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
-class PostProvider with ChangeNotifier {
+class PostsProvider with ChangeNotifier {
   final CollectionReference posts =
       FirebaseFirestore.instance.collection('Posts');
   final FirebaseAuth auth = FirebaseAuth.instance;
 
-  // fetch userlogged in details from Firestore
   Future<UserModel?> fetchCurrentUserDetails() async {
     try {
       final currentUser = auth.currentUser;
@@ -35,24 +34,27 @@ class PostProvider with ChangeNotifier {
   }
 
   // method to add a job post
- Future<DocumentReference> addPost(Post post) async {
-  UserModel? currentUserDetails = await fetchCurrentUserDetails();
+  Future<DocumentReference> addPost(Post post) async {
+    UserModel? currentUserDetails = await fetchCurrentUserDetails();
 
-  if (currentUserDetails == null) {
-    throw Exception('Current user details could not be fetched.');
+    if (currentUserDetails == null) {
+      throw Exception('Current user details could not be fetched.');
+    }
+
+    return posts.add({
+      "ownerId": currentUserDetails.uid,
+      "name": currentUserDetails.name,
+      "email": currentUserDetails.email,
+      "role": currentUserDetails.role,
+      "profilePic": currentUserDetails.profilePic,
+      "title": post.title ?? '',
+      "description": post.description,
+      "type": post.type,
+      "location": post.location ?? '',
+      "rate": post.rate,
+      "timestamp": Timestamp.now(),
+    });
   }
-
-  return posts.add({
-    "name": currentUserDetails.name,
-    "email": currentUserDetails.email,
-    "role": currentUserDetails.role,
-    "profilePic": currentUserDetails.profilePic,
-    "description": post.postDescription,
-    "type": post.typeOfJob,
-    "rate": post.yourRate,
-    "timestamp": Timestamp.now(),
-  });
-}
 
   // read the post from firestore
   Stream<QuerySnapshot> getPostsStream() {
@@ -63,4 +65,12 @@ class PostProvider with ChangeNotifier {
 
     return postsStream;
   }
+
+  // fetching users' own post
+  Stream<QuerySnapshot> getSpecificPostsStream(String? userId) {
+  if (userId == null || userId.isEmpty) {
+    return Stream.empty(); 
+  }
+  return posts.where('ownerId', isEqualTo: userId).snapshots();
+}
 }
