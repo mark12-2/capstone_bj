@@ -56,6 +56,12 @@ class PostsProvider with ChangeNotifier {
     });
   }
 
+  // deleting a post
+  Future<void> deletePost(String postId) async {
+    final postRef = FirebaseFirestore.instance.collection('Posts').doc(postId);
+    await postRef.delete();
+  }
+
   // read the post from firestore
   Stream<QuerySnapshot> getPostsStream() {
     final postsStream = FirebaseFirestore.instance
@@ -68,9 +74,31 @@ class PostsProvider with ChangeNotifier {
 
   // fetching users' own post
   Stream<QuerySnapshot> getSpecificPostsStream(String? userId) {
-  if (userId == null || userId.isEmpty) {
-    return Stream.empty(); 
+    if (userId == null || userId.isEmpty) {
+      return Stream.empty();
+    }
+    return posts.where('ownerId', isEqualTo: userId).snapshots();
   }
-  return posts.where('ownerId', isEqualTo: userId).snapshots();
-}
+
+// update post method
+  Future<void> updatePost(Post post) async {
+    UserModel? currentUserDetails = await fetchCurrentUserDetails();
+
+    if (currentUserDetails == null) {
+      throw Exception('Current user details could not be fetched.');
+    }
+
+    await posts.doc(post.id).update({
+      "title": post.title ?? '',
+      "description": post.description,
+      "type": post.type,
+      "location": post.location ?? '',
+      "rate": post.rate,
+      "name": currentUserDetails.name,
+      "email": currentUserDetails.email,
+      "role": currentUserDetails.role,
+      "profilePic": currentUserDetails.profilePic,
+      "timestamp": Timestamp.now(),
+    });
+  }
 }

@@ -1,32 +1,48 @@
 class Post {
+  String? id;
   String? title;
   String? description;
   String? type;
   String? location;
   String? rate;
-  List<Comment>? comments;
+  String? ownerId;
+  // List<Comment>? comments;
 
   Post({
+    this.id,
     this.title,
     this.description,
     this.type,
     this.location,
     this.rate,
-    this.comments,
+    this.ownerId,
+    // this.comments,
   });
 
   factory Post.fromMap(Map<String, dynamic> map) {
-    final comments = map['comments'] as List<dynamic>;
-    final commentList = comments.map((comment) => Comment.fromMap(comment)).toList();
+    // final comments = map['comments'] as List<dynamic>;
+    // final commentList = comments.map((comment) => Comment.fromMap(comment)).toList();
     return Post(
+      id: map['id'],
       title: map['title'],
       description: map['description'],
       type: map['type'],
       location: map['location'],
       rate: map['rate'],
-      comments: commentList,
+      ownerId: map['ownerId'],
+      // comments: commentList,
     );
   }
+  Map<String, dynamic> toMap() {
+    return {
+      'title': title,
+      'description': description,
+      'type': type,
+      'location': location,
+      'rate': rate,
+    };
+  }
+
 }
 
 class Comment {

@@ -224,6 +224,18 @@ class _EditUserInformationState extends State<EditUserInformation> {
                               onPressed: () => storeData(),
                             ),
                           ),
+                          const SizedBox(height: 15),
+                          SizedBox(
+                            height: 50,
+                            width: MediaQuery.of(context).size.width * 0.90,
+                            child: CustomButton(
+                              buttonText: "Cancel",
+                              buttonColor: Colors.red,
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ),
                           const SizedBox(height: 400),
                         ],
                       ),
@@ -252,7 +264,7 @@ class _EditUserInformationState extends State<EditUserInformation> {
     if (userExists) {
       ap.updateUserData(
         context: context,
-        uid: ap.uid, 
+        uid: ap.uid,
         name: name,
         email: email,
         address: address,
@@ -287,29 +299,29 @@ class _EditUserInformationState extends State<EditUserInformation> {
           userModel: userModel,
           profilePic: image!,
           onSuccess: () {
-          ap.saveUserDataToSP().then((value) {
-            ap.setSignIn();
-            String role = ap.userModel.role;
+            ap.saveUserDataToSP().then((value) {
+              ap.setSignIn();
+              String role = ap.userModel.role;
 
-            // Navigate to the designated page based on the role
-            if (role == 'Employer') {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const EmployerNavigation(),
-                ),
-                (route) => false,
-              );
-            } else if (role == 'Job Hunter') {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const JobhunterNavigation(),
-                ),
-                (route) => false,
-              );
-            }
-          });
+              // Navigate to the designated page based on the role
+              if (role == 'Employer') {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const EmployerNavigation(),
+                  ),
+                  (route) => false,
+                );
+              } else if (role == 'Job Hunter') {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const JobhunterNavigation(),
+                  ),
+                  (route) => false,
+                );
+              }
+            });
           },
         );
       } else {

@@ -1,17 +1,11 @@
 import 'package:capstone/navigation/employer_navigation.dart';
 import 'package:capstone/navigation/jobhunter_navigation.dart';
 import 'package:capstone/screens_for_auth/user_information.dart';
-import 'package:capstone/testing_file/home_screen.dart';
-import 'package:capstone/styles/custom_button.dart';
 import 'package:capstone/styles/textstyle.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone/provider/auth_provider.dart';
-import 'package:capstone/default_screens/home.dart';
-// import 'package:capstone/screens/user_information_screen.dart';
 import 'package:capstone/utils/utils.dart';
 import 'package:pinput/pinput.dart';
-// import 'package:capstone/widgets/custom_button.dart';
-// import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 
 class OtpScreen extends StatefulWidget {
@@ -24,6 +18,7 @@ class OtpScreen extends StatefulWidget {
 
 class _OtpScreenState extends State<OtpScreen> {
   String? otpCode;
+  final bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -114,8 +109,7 @@ class _OtpScreenState extends State<OtpScreen> {
                             style: CustomTextStyle.regularText.copyWith(
                               color: Colors.white,
                             ),
-                          )
-                          ),
+                          )),
                       const SizedBox(height: 20),
                       const Text(
                         "Didn't receive any code?",
@@ -163,21 +157,29 @@ class _OtpScreenState extends State<OtpScreen> {
 
                 // Navigate to the designated page based on the role
                 if (role == 'Employer') {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const EmployerNavigation(),
-                    ),
-                    (route) => false,
-                  );
+                  if (isLoading == true) {
+                    CircularProgressIndicator();
+                  } else {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const EmployerNavigation(),
+                      ),
+                      (route) => false,
+                    );
+                  }
                 } else if (role == 'Job Hunter') {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const JobhunterNavigation(),
-                    ),
-                    (route) => false,
-                  );
+                  if (isLoading == true) {
+                    CircularProgressIndicator();
+                  } else {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const JobhunterNavigation(),
+                      ),
+                      (route) => false,
+                    );
+                  }
                 }
               },
             );

@@ -143,14 +143,10 @@ class _HomePageState extends State<HomePage> {
                                                   fontSize: responsiveSize(
                                                       context, 0.05)),
                                         ),
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              right: 55.0),
-                                          child: Text(
-                                            "$role",
-                                            style:
-                                                CustomTextStyle.roleRegularText,
-                                          ),
+                                        Text(
+                                          "$role",
+                                          style:
+                                              CustomTextStyle.roleRegularText,
                                         ),
                                       ],
                                     ),
@@ -160,17 +156,22 @@ class _HomePageState extends State<HomePage> {
                                 const SizedBox(height: 15),
                                 // post description
                                 Text(
+                                  "$title",
+                                  style: CustomTextStyle.semiBoldText,
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
                                   "$description",
                                   style: CustomTextStyle.regularText,
                                 ),
-                                const SizedBox(height: 20),
+                                const SizedBox(height: 15),
                                 Text(
                                   "Type of Job: $type",
                                   style: CustomTextStyle.typeRegularText,
                                 ),
                                 Text(
                                   "Rate: $rate",
-                                  style: CustomTextStyle.semiBoldText,
+                                  style: CustomTextStyle.regularText,
                                 ),
 
                                 const SizedBox(height: 15),

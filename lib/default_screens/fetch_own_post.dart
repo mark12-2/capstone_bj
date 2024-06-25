@@ -1,10 +1,12 @@
-import 'package:capstone/provider/auth_provider.dart';
+import 'package:capstone/employer_screens/edit_jobpost.dart';
+import 'package:capstone/jobhunter_screens/edit_post.dart';
 import 'package:capstone/provider/posts_provider.dart';
 import 'package:capstone/styles/responsive_utils.dart';
 import 'package:capstone/styles/textstyle.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Fetch extends StatefulWidget {
   const Fetch({super.key});
@@ -24,7 +26,7 @@ class _FetchState extends State<Fetch> {
 
   @override
   Widget build(BuildContext context) {
-    final PostsProvider _postsProvider = PostsProvider();
+    final PostsProvider postsProvider = PostsProvider();
 
     return Scaffold(
       appBar: AppBar(
@@ -40,8 +42,8 @@ class _FetchState extends State<Fetch> {
         children: [
           StreamBuilder<QuerySnapshot>(
               stream: _userId != null
-                  ? _postsProvider.getSpecificPostsStream(_userId)
-                  : Stream.empty(),
+                  ? postsProvider.getSpecificPostsStream(_userId)
+                  : const Stream.empty(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
@@ -129,6 +131,11 @@ class _FetchState extends State<Fetch> {
                                 ),
                                 const SizedBox(height: 15),
                                 Text(
+                                  "$title",
+                                  style: CustomTextStyle.semiBoldText,
+                                ),
+                                const SizedBox(height: 15),
+                                Text(
                                   "$description",
                                   style: CustomTextStyle.regularText,
                                 ),
@@ -139,7 +146,70 @@ class _FetchState extends State<Fetch> {
                                 ),
                                 Text(
                                   "Rate: $rate",
-                                  style: CustomTextStyle.semiBoldText,
+                                  style: CustomTextStyle.regularText,
+                                ),
+                                const SizedBox(height: 15),
+                                Row(
+                                  children: [
+                                    IconButton(
+                                        icon: Icon(Icons.edit),
+                                        onPressed: () {
+                                          if (role == 'Employer') {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      JobEditPost(
+                                                          postId: post.id)),
+                                            );
+                                          } else if (role == 'Job Hunter') {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      EditPost(
+                                                          postId: post.id)),
+                                            );
+                                          }
+                                        }),
+                                    IconButton(
+                                      icon: Icon(Icons.delete),
+                                      onPressed: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: const Text(
+                                                  'Confirm Deletion'),
+                                              content: const Text(
+                                                  'Are you sure you want to delete this post? This action cannot be undone.'),
+                                              actions: <Widget>[
+                                                TextButton(
+                                                  child: const Text('Cancel'),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                                TextButton(
+                                                  child: const Text('Delete'),
+                                                  onPressed: () async {
+                                                    final postsProvider =
+                                                        Provider.of<
+                                                                PostsProvider>(
+                                                            context,
+                                                            listen: false);
+                                                    await postsProvider
+                                                        .deletePost(post.id);
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      },
+                                    )
+                                  ],
                                 ),
                               ],
                             ),
