@@ -1,8 +1,6 @@
 # capstone
 
-A new Flutter project.
-
-## Getting Started
+Capstone project.
 
 This project is a starting point for a Flutter application.
 
