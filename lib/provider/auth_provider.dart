@@ -23,6 +23,10 @@ class AuthProvider extends ChangeNotifier {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
 
+  User? getCurrentUser() {
+    return _firebaseAuth.currentUser;
+  }
+
   // check if user is signed in
   void checkSign() async {
     final SharedPreferences s = await SharedPreferences.getInstance();

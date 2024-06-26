@@ -10,19 +10,35 @@ class CustomTextStyle {
   );
 
   static const TextStyle roleRegularText = TextStyle(
-      fontSize: 14,
-      letterSpacing: 0.7,
-      //fontWeight: FontWeight.w200,
-      fontFamily: 'Poppins',
-      color: Color.fromARGB(255, 22, 13, 152),
+    fontSize: 14,
+    letterSpacing: 0.7,
+    //fontWeight: FontWeight.w200,
+    fontFamily: 'Poppins',
+    color: Color.fromARGB(255, 22, 13, 152),
   );
-  
+
   static const TextStyle typeRegularText = TextStyle(
     fontSize: 14,
     letterSpacing: 0.7,
     //fontWeight: FontWeight.w200,
     fontFamily: 'Poppins',
     color: Color.fromARGB(255, 232, 140, 1),
+  );
+
+  static const TextStyle chatRegularText = TextStyle(
+    fontSize: 14,
+    letterSpacing: 0.7,
+    //fontWeight: FontWeight.w200,
+    fontFamily: 'Poppins',
+    color: Colors.white,
+  );
+
+  static const TextStyle chatusernameRegularText = TextStyle(
+    fontSize: 11,
+    letterSpacing: 0.7,
+    //fontWeight: FontWeight.w200,
+    fontFamily: 'Poppins',
+    color: Colors.black,
   );
 
   static const TextStyle regularText = TextStyle(

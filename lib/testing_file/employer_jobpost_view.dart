@@ -1,4 +1,4 @@
-import 'package:capstone/mapping/location_service.dart';
+import 'package:capstone/provider/mapping/location_service.dart';
 import 'package:capstone/provider/posts_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';

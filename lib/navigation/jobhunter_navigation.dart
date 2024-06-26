@@ -1,5 +1,5 @@
+import 'package:capstone/chats/messaging_page.dart';
 import 'package:capstone/default_screens/home.dart';
-import 'package:capstone/default_screens/messaging.dart';
 import 'package:capstone/default_screens/search.dart';
 import 'package:capstone/employer_screens/employer_profile.dart';
 import 'package:capstone/jobhunter_screens/create_post.dart';
