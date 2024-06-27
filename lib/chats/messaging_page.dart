@@ -5,7 +5,6 @@ import 'package:capstone/styles/textstyle.dart';
 import 'package:capstone/model/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class MessagingPage extends StatefulWidget {
   const MessagingPage({super.key});
@@ -16,55 +15,63 @@ class MessagingPage extends StatefulWidget {
 
 class _MessagingPageState extends State<MessagingPage> {
   final ChatService _chatService = ChatService();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Messages'),
+        title: const Text('Messages'),
       ),
       body: FutureBuilder<UserModel?>(
-        future: _chatService.fetchCurrentUserDetails(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
+          future: _chatService.fetchCurrentUserDetails(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          if (snapshot.hasError || !snapshot.hasData) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
+            if (snapshot.hasError || !snapshot.hasData) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            }
 
-          final currentUser = snapshot.data!;
-          return StreamBuilder<QuerySnapshot>(
-            stream: _chatService.getUserChatRooms(currentUser.uid),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
-              }
+            final currentUser = snapshot.data!;
+            return StreamBuilder<QuerySnapshot>(
+              stream: _chatService.getUserChatRooms(currentUser.uid),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-              if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              }
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
 
-              final chatRooms = snapshot.data!.docs;
+                final chatRooms = snapshot.data!.docs;
 
-              if (chatRooms.isEmpty) {
-                return Center(child: Text('No chat rooms'));
-              }
+                if (chatRooms.isEmpty) {
+                  return const Center(child: Text('No Messages'));
+                }
 
-              return ListView.builder(
-                itemCount: chatRooms.length,
-                itemBuilder: (context, index) {
-                  final chatRoom = chatRooms[index];
-                  final chatRoomData = chatRoom.data() as Map<String, dynamic>;
-                  final otherUserId = chatRoomData['users']
-                      .firstWhere((userId) => userId != currentUser.uid);
-                  final otherUserName = chatRoomData['name'][otherUserId];
-                  final lastMessage = chatRoomData['messages'][
-                      0]; 
+                return ListView.builder(
+                  itemCount: chatRooms.length,
+                  itemBuilder: (context, index) {
+                    final chatRoom = chatRooms[index];
+                    final chatRoomData =
+                        chatRoom.data() as Map<String, dynamic>;
 
-                  if (lastMessage != null) {
+                    // Get the other user's ID and name
+                    final otherUserId = chatRoomData['users']
+                        .firstWhere((userId) => userId != currentUser.uid);
+                    final otherUserName =
+                        chatRoomData['userNames'][otherUserId];
+
+                    // Get the last message
+                    // final messages = chatRoomData['messages'];
+                    // String lastMessageText = 'No messages';
+                    // if (messages != null && messages.isNotEmpty) {
+                    //   final lastMessage = messages.last;
+                    //   lastMessageText = lastMessage['message'];
+                    // }
+
                     return ListTile(
                       title: Text(
                         otherUserName,
@@ -72,7 +79,8 @@ class _MessagingPageState extends State<MessagingPage> {
                             .copyWith(fontSize: responsiveSize(context, 0.04)),
                       ),
                       subtitle: Text(
-                        lastMessage['message'],
+                        // lastMessageText,
+                        'View message',
                         style: CustomTextStyle.regularText
                             .copyWith(fontSize: responsiveSize(context, 0.03)),
                       ),
@@ -88,26 +96,11 @@ class _MessagingPageState extends State<MessagingPage> {
                         );
                       },
                     );
-                  } else {
-                    return ListTile(
-                      title: Text(
-                        otherUserName,
-                        style: CustomTextStyle.semiBoldText
-                            .copyWith(fontSize: responsiveSize(context, 0.04)),
-                      ),
-                      subtitle: Text(
-                        'No messages',
-                        style: CustomTextStyle.regularText
-                            .copyWith(fontSize: responsiveSize(context, 0.03)),
-                      ),
-                    );
-                  }
-                },
-              );
-            },
-          );
-        },
-      ),
+                  },
+                );
+              },
+            );
+          }),
     );
   }
 }

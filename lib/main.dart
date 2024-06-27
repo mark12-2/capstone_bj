@@ -1,5 +1,6 @@
 import 'package:capstone/firebase_options.dart';
 import 'package:capstone/provider/auth_provider.dart';
+import 'package:capstone/provider/notifications/notifications_provider.dart';
 import 'package:capstone/provider/posts_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,7 @@ class ThisApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => PostsProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationProvider()),
       ],
       child: MaterialApp(
         title: 'Blue Jobs',

@@ -1,9 +1,12 @@
 import 'package:capstone/chats/chatbubble.dart';
 import 'package:capstone/provider/messaging/messaging_services.dart';
+import 'package:capstone/provider/notifications/notifications_provider.dart';
 import 'package:capstone/styles/textstyle.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class MessagingBubblePage extends StatelessWidget {
   final String receiverName;
@@ -17,9 +20,18 @@ class MessagingBubblePage extends StatelessWidget {
   final ChatService _chatService = ChatService();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  void sendMessage() async {
+  void sendMessage(BuildContext context) async {
     if (_messageController.text.isNotEmpty) {
       await _chatService.sendMessage(receiverId, _messageController.text);
+
+      // Send notification
+      final notificationProvider =
+          Provider.of<NotificationProvider>(context, listen: false);
+      await notificationProvider.createMessageNotification(
+        receiverId: receiverId,
+        senderName: _auth.currentUser!.displayName ?? 'Unknown',
+        message: _messageController.text,
+      );
 
       // clear message after sending
       _messageController.clear();
@@ -35,7 +47,7 @@ class MessagingBubblePage extends StatelessWidget {
           // display messsages
           Expanded(child: _buildMessageList()),
           // user input
-          _buildUserInput(),
+          _buildUserInput(context),
         ],
       ),
     );
@@ -69,6 +81,12 @@ class MessagingBubblePage extends StatelessWidget {
         ? Alignment.centerRight
         : Alignment.centerLeft;
 
+    Timestamp timestamp = data['timestamp'];
+    DateTime dateTime = timestamp.toDate();
+
+    // Format the DateTime yyyy-MM-dd
+    String formattedTimestamp = DateFormat('hh:mm').format(dateTime);
+
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Container(
@@ -82,13 +100,14 @@ class MessagingBubblePage extends StatelessWidget {
                 ),
           Chatbubble(
             message: data['message'],
-          )
+          ),
+          Text(formattedTimestamp),
         ]),
       ),
     );
   }
 
-  Widget _buildUserInput() {
+  Widget _buildUserInput(BuildContext context) {
     return Row(
       children: [
         Expanded(
@@ -96,6 +115,9 @@ class MessagingBubblePage extends StatelessWidget {
             padding: const EdgeInsets.all(15.0),
             child: TextField(
               controller: _messageController,
+              maxLines: 100,
+              minLines: 1,
+              keyboardType: TextInputType.multiline,
               decoration: const InputDecoration(
                 hintText: 'Type message...',
               ),
@@ -104,7 +126,7 @@ class MessagingBubblePage extends StatelessWidget {
         ),
         IconButton(
           icon: const Icon(Icons.send),
-          onPressed: sendMessage,
+          onPressed: () => sendMessage(context),
         ),
       ],
     );

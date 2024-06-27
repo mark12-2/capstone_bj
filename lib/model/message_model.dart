@@ -24,4 +24,14 @@ class Message {
       "timestamp": timestamp
     };
   }
+
+  factory Message.fromMap(Map<String, dynamic> map) {
+    return Message(
+      senderId: map['senderId'],
+      senderName: map['senderName'],
+      receiverId: map['receiverId'],
+      message: map['message'],
+      timestamp: map['timestamp'],
+    );
+  }
 }

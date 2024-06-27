@@ -162,7 +162,7 @@ class _UserInformationState extends State<UserInformation> {
                           //email input
                           controller: _emailController,
                           focusNode: _emailFocusNode,
-                          decoration: customInputDecoration('Email'),
+                          decoration: customInputDecoration('Email (Optional)'),
                         ),
                         if (_isEmailFocused)
                           const Padding(
@@ -276,25 +276,35 @@ class _UserInformationState extends State<UserInformation> {
                             },
                           ),
                         ),
-                          const SizedBox(
-                          height: 15),
+                        const SizedBox(height: 20),
                         // user type or role input
                         Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: DropdownButton<String>(
-                            value: _roleSelection,
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                _roleSelection = newValue;
-                              });
-                            },
-                            items: <String>['Job Hunter', 'Employer']
-                                .map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
+                          padding:
+                              const EdgeInsets.only(top: 8.0, right: 270.0),
+                          child: Column(
+                            children: [
+                              const Text(
+                                'User Type',
+                                style: TextStyle(fontSize: 12),
+                              ),
+                              DropdownButton<String>(
+                                value: _roleSelection,
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    _roleSelection = newValue;
+                                  });
+                                },
+                                items: <String>[
+                                  'Job Hunter',
+                                  'Employer'
+                                ].map<DropdownMenuItem<String>>((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value),
+                                  );
+                                }).toList(),
+                              ),
+                            ],
                           ),
                         ),
                         const SizedBox(
@@ -322,6 +332,14 @@ class _UserInformationState extends State<UserInformation> {
   // storing data function
   void storeData() async {
     final ap = Provider.of<AuthProvider>(context, listen: false);
+    if (_nameController.text.isEmpty ||
+        _roleSelection == null ||
+        _birthdayController.text.isEmpty ||
+        _address == null) {
+      showSnackBar(context, "Please fill in all fields...");
+      return;
+    }
+
     UserModel userModel = UserModel(
       name: _nameController.text.trim(),
       email: _emailController.text.trim(),
@@ -370,4 +388,3 @@ class _UserInformationState extends State<UserInformation> {
     }
   }
 }
-

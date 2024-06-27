@@ -1,5 +1,6 @@
 import 'package:capstone/chats/messaging_roompage.dart';
 import 'package:capstone/provider/mapping/location_service.dart';
+import 'package:capstone/provider/notifications/notifications_provider.dart';
 import 'package:capstone/testing_file/employer_jobpost_view.dart';
 import 'package:capstone/provider/posts_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -44,17 +45,38 @@ class _HomePageState extends State<HomePage> {
           child: Image.asset('assets/images/bluejobs.png'),
         ),
         actions: <Widget>[
-          IconButton(
-            icon: const Icon(
-              Icons.notifications,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const NotificationsPage(),
-                ),
+          Consumer<NotificationProvider>(
+            builder: (context, notificationProvider, child) {
+              return Stack(
+                children: <Widget>[
+                  IconButton(
+                    icon: const Icon(
+                      Icons.notifications,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const NotificationsPage(),
+                        ),
+                      );
+                    },
+                  ),
+                  if (notificationProvider.unreadNotifications > 0)
+                    Positioned(
+                      top: 10,
+                      right: 10,
+                      child: Container(
+                        width: 12,
+                        height: 12,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ),
+                ],
               );
             },
           ),
