@@ -24,15 +24,6 @@ class MessagingBubblePage extends StatelessWidget {
     if (_messageController.text.isNotEmpty) {
       await _chatService.sendMessage(receiverId, _messageController.text);
 
-      // Send notification
-      final notificationProvider =
-          Provider.of<NotificationProvider>(context, listen: false);
-      await notificationProvider.createMessageNotification(
-        receiverId: receiverId,
-        senderName: _auth.currentUser!.displayName ?? 'Unknown',
-        message: _messageController.text,
-      );
-
       // clear message after sending
       _messageController.clear();
     }

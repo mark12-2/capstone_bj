@@ -1,4 +1,3 @@
-// location_service.dart
 import 'package:geocoding/geocoding.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter/material.dart';
@@ -25,18 +24,10 @@ void showLocationPickerModal(
                 Navigator.pop(context);
               },
             ),
-            nonRotatedChildren: [
-              RichAttributionWidget(
-                attributions: [
-                  TextSourceAttribution('OpenStreetMap contributors',
-                      onTap: () => null),
-                ],
-              )
-            ],
             children: [
               TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.example.app',
+                userAgentPackageName: 'dev.fleaflet.flutter_map.example',
               ),
               MarkerLayer(
                 markers: [
@@ -44,11 +35,17 @@ void showLocationPickerModal(
                     width: 150.0,
                     height: 150.0,
                     point: LatLng(lat, lon),
-                    child: Icon(
+                    child: const Icon(
                       Icons.location_pin,
-                      color: const Color.fromARGB(255, 226, 17, 2),
+                      color: Color.fromARGB(255, 226, 17, 2),
                     ),
                   ),
+                ],
+              ),
+              RichAttributionWidget(
+                attributions: [
+                  TextSourceAttribution('OpenStreetMap contributors',
+                      onTap: () => null),
                 ],
               )
             ],

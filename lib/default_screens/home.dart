@@ -1,4 +1,5 @@
 import 'package:capstone/chats/messaging_roompage.dart';
+import 'package:capstone/default_screens/comment.dart';
 import 'package:capstone/provider/mapping/location_service.dart';
 import 'package:capstone/provider/notifications/notifications_provider.dart';
 import 'package:capstone/testing_file/employer_jobpost_view.dart';
@@ -20,6 +21,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final ScrollController _scrollController = ScrollController();
+  final _commentTextController = TextEditingController();
 
   @override
   void dispose() {
@@ -27,13 +29,19 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  void showCommentDialog(String postId, BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (dialogContext) => CommentScreen(postId: postId),
+  );
+}
   @override
   Widget build(BuildContext context) {
     final PostsProvider postDetails = Provider.of<PostsProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 27, 74, 109),
+        backgroundColor: const Color.fromARGB(255, 27, 74, 109),
         leading: GestureDetector(
           onTap: () {
             _scrollController.animateTo(
@@ -55,6 +63,9 @@ class _HomePageState extends State<HomePage> {
                       color: Colors.white,
                     ),
                     onPressed: () {
+                      if (notificationProvider.unreadNotifications > 0) {
+                        notificationProvider.markAsRead();
+                      }
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -264,20 +275,13 @@ class _HomePageState extends State<HomePage> {
 
                                 const SizedBox(height: 20),
 
-                                // supposed to be comment
+                                // comment section
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     InkWell(
                                       onTap: () {
-                                        // Display comment input field
-                                        // showDialog(
-                                        //   context: context,
-                                        //   builder: (context) {
-                                        //     return CommentInputDialog(
-                                        //         postId: post.id);
-                                        //   },
-                                        // );
+                                        showCommentDialog(post.id, context);
                                       },
                                       child: Container(
                                         height: 53,
@@ -357,5 +361,26 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
     );
+  }
+
+  // adding a comment
+  void addComment(BuildContext context, String postId) async {
+    if (_commentTextController.text.isNotEmpty) {
+      String comment = _commentTextController.text;
+
+      try {
+        await Provider.of<PostsProvider>(context, listen: false)
+            .addComment(comment, postId);
+        // You can add a success message here if you want
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Comment added successfully')),
+        );
+      } catch (e) {
+        // Handle errors here
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to add comment: $e')),
+        );
+      }
+    }
   }
 }

@@ -1,17 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Notification {
   String id;
   String title;
-  String message;
+  String notif;
   String senderName;
   bool isRead;
 
   Notification({
     required this.id,
     required this.title,
-    required this.message,
+    required this.notif,
     required this.senderName,
     this.isRead = false,
   });
@@ -20,7 +21,7 @@ class Notification {
     return Notification(
       id: map['id'],
       title: map['title'],
-      message: map['message'],
+      notif: map['notif'],
       senderName: map['senderName'],
       isRead: map['isRead'] ?? false,
     );
@@ -30,7 +31,7 @@ class Notification {
     return {
       'id': id,
       'title': title,
-      'message': message,
+      'notif': notif,
       'senderName': senderName,
       'isRead': isRead,
     };
@@ -40,6 +41,9 @@ class Notification {
 class NotificationProvider with ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   late CollectionReference _notificationsCollection;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  List<String> _unreadNotificationsIds = [];
 
   NotificationProvider() {
     _notificationsCollection = _firestore.collection('notifications');
@@ -53,6 +57,10 @@ class NotificationProvider with ChangeNotifier {
   int get unreadNotifications => _unreadNotifications;
 
   void init() {
+    final userId = _auth.currentUser!.uid;
+    _notificationsCollection =
+        _firestore.collection('users').doc(userId).collection('notifications');
+
     _notificationsCollection.snapshots().listen((snapshot) {
       _notifications = snapshot.docs
           .map(
@@ -69,24 +77,58 @@ class NotificationProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> markAsRead(String notificationId) async {
-    await _notificationsCollection.doc(notificationId).update({'isRead': true});
+  void markAsRead() async {
+    for (var id in _unreadNotificationsIds) {
+      await FirebaseFirestore.instance
+          .collection('notifications')
+          .doc(id)
+          .update({'isRead': true});
+    }
+    _unreadNotifications = 0;
+    _unreadNotificationsIds = [];
     notifyListeners();
   }
 
-  Future<void> createMessageNotification(
+  Future<void> commentNotification(
       {required String receiverId,
+      required String senderId,
       required String senderName,
-      required String message}) async {
-    Notification notification = Notification(
-      id: _notificationsCollection.doc().id,
-      title: 'New Message',
-      message: message,
-      senderName: senderName,
-      isRead: false,
-    );
+      required String notif}) async {
+    String? senderName;
+    // Fetch the senderName from Firestore
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(senderId)
+        .get()
+        .then((value) => senderName = value.data()?['name']);
 
-    await _notificationsCollection.add(notification.toMap());
-    notifyListeners();
+    if (senderName != null) {
+      Notification notification = Notification(
+        id: _notificationsCollection.doc().id,
+        title: 'New Message',
+        notif: notif,
+        senderName: senderName!,
+        isRead: false,
+      );
+
+      await _firestore
+          .collection('users')
+          .doc(receiverId)
+          .collection('notifications')
+          .add(notification.toMap());
+      notifyListeners();
+    }
   }
 }
+
+
+
+// // Send notification
+//       final notificationProvider =
+//           Provider.of<NotificationProvider>(context, listen: false);
+//       await notificationProvider.createMessageNotification(
+//         receiverId: receiverId,
+//         senderId: _auth.currentUser!.uid,
+//         senderName: _auth.currentUser!.displayName ?? 'Unknown',
+//        notif: _commentTextController.text,
+//       );

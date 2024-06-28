@@ -1,11 +1,13 @@
 import 'package:capstone/employer_screens/edit_jobpost.dart';
 import 'package:capstone/jobhunter_screens/edit_post.dart';
+import 'package:capstone/provider/mapping/location_service.dart';
 import 'package:capstone/provider/posts_provider.dart';
 import 'package:capstone/styles/responsive_utils.dart';
 import 'package:capstone/styles/textstyle.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:provider/provider.dart';
 
 class Fetch extends StatefulWidget {
@@ -140,6 +142,30 @@ class _FetchState extends State<Fetch> {
                                   style: CustomTextStyle.regularText,
                                 ),
                                 const SizedBox(height: 20),
+                                 role == 'Employer'
+                                    ? Row(
+                                        children: [
+                                          GestureDetector(
+                                            onTap: () async {
+                                              final locations =
+                                                  await locationFromAddress(
+                                                      location);
+                                              final lat = locations[0].latitude;
+                                              final lon =
+                                                  locations[0].longitude;
+                                              showLocationPickerModal(
+                                                  context,
+                                                  TextEditingController(
+                                                      text: '$lat, $lon'));
+                                            },
+                                            child: Text(location,
+                                                style: const TextStyle(
+                                                    color: Colors.blue)),
+                                          ),
+                                        ],
+                                      )
+                                    : Container(),
+
                                 Text(
                                   "Type of Job: $type",
                                   style: CustomTextStyle.typeRegularText,

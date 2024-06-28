@@ -1,3 +1,4 @@
+import 'package:capstone/styles/textstyle.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:capstone/provider/notifications/notifications_provider.dart';
@@ -8,38 +9,50 @@ class NotificationsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Notifications'),
-      ),
-      body: Consumer<NotificationProvider>(
-        builder: (context, notificationProvider, child) {
-          if (notificationProvider.notifications.isEmpty) {
-            return const Center(child: Text('No notifications'));
-          }
+        appBar: AppBar(
+          title: const Text('Notifications'),
+        ),
+        body: Consumer<NotificationProvider>(
+          builder: (context, notificationProvider, child) {
+            if (notificationProvider.notifications.isEmpty) {
+              return const Center(child: Text('No notifications'));
+            }
 
-          return ListView.builder(
-            itemCount: notificationProvider.notifications.length,
-            itemBuilder: (context, index) {
-              final notification = notificationProvider.notifications[index];
-              return ListTile(
-                title: Text(notification.title),
-                subtitle: Text(notification.message),
-                trailing: IconButton(
-                  icon: Icon(
-                    notification.isRead ? Icons.check_circle : Icons.circle,
-                    color: notification.isRead ? Colors.green : Colors.red,
+            return ListView.builder(
+              itemCount: notificationProvider.notifications.length,
+              itemBuilder: (context, index) {
+                final notification = notificationProvider.notifications[index];
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Card(
+                    elevation: 1,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      side: const BorderSide(width: 1, color: Colors.grey),
+                    ),
+                    child: ListTile(
+                      title: Text(
+                        notification.senderName,
+                        style: CustomTextStyle.semiBoldText,
+                      ),
+                      subtitle: Text(
+                        notification.notif,
+                        style: CustomTextStyle.regularText,
+                      ),
+                      // onTap: () {
+                      //   Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //       builder: (context) => const MessagingPage(),
+                      //     ),
+                      //   );
+                      // },
+                    ),
                   ),
-                  onPressed: () {
-                    if (!notification.isRead) {
-                      notificationProvider.markAsRead(notification.id);
-                    }
-                  },
-                ),
-              );
-            },
-          );
-        },
-      ),
-    );
+                );
+              },
+            );
+          },
+        ));
   }
 }

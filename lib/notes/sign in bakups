@@ -1,0 +1,33 @@
+void signInWithPhone(BuildContext context, String phoneNumber) async {
+  try {
+    await _firebaseAuth.verifyPhoneNumber(
+      phoneNumber: phoneNumber,
+      verificationCompleted: (PhoneAuthCredential phoneAuthCredential) async {
+        await _firebaseAuth.signInWithCredential(phoneAuthCredential);
+      },
+      verificationFailed: (error) {
+        showSnackBar(context, "Verification failed: ${error.message}");
+      },
+      codeSent: (verificationId, forceResendingToken) async {
+        // Close the web view
+        final result = await SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+        if (result != null && result) {
+          // Navigate to the OTP screen
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OtpScreen(verificationId: verificationId),
+            ),
+          );
+        } else {
+          // Handle the case where SystemNavigator.pop is not supported
+          // You can show an error message or take alternative action
+          showSnackBar(context, "Error closing web view");
+        }
+      },
+      codeAutoRetrievalTimeout: (verificationId) {},
+    );
+  } on FirebaseAuthException catch (e) {
+    showSnackBar(context, e.message.toString());
+  }
+}

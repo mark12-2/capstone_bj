@@ -1,5 +1,6 @@
 import 'package:capstone/model/posts_model.dart';
 import 'package:capstone/navigation/employer_navigation.dart';
+import 'package:capstone/provider/mapping/location_service.dart';
 import 'package:capstone/provider/posts_provider.dart';
 import 'package:capstone/styles/custom_theme.dart';
 import 'package:capstone/styles/responsive_utils.dart';
@@ -184,11 +185,11 @@ class _CreateJobPostPageState extends State<CreateJobPostPage> {
                       style: TextStyle(color: Colors.grey, fontSize: 12),
                     ),
                   ),
-                // ElevatedButton(
-                //   onPressed: () =>
-                //       showLocationPickerModal(context, _locationController),
-                //   child: const Text('Show Location'),
-                // ),
+                ElevatedButton(
+                  onPressed: () =>
+                      showLocationPickerModal(context, _locationController),
+                  child: const Text('Show Location'),
+                ),
               ],
             ),
 

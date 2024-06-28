@@ -67,6 +67,7 @@ class _EditUserInformationState extends State<EditUserInformation> {
 
   @override
   Widget build(BuildContext context) {
+    final userLoggedIn = Provider.of<AuthProvider>(context, listen: false);
     final isLoading =
         Provider.of<AuthProvider>(context, listen: true).isLoading;
     return Scaffold(
@@ -107,7 +108,8 @@ class _EditUserInformationState extends State<EditUserInformation> {
                               ),
                             )
                           : CircleAvatar(
-                              backgroundImage: FileImage(image!),
+                              backgroundImage: NetworkImage(
+                                  userLoggedIn.userModel.profilePic ?? 'null'),
                               radius: 50,
                             ),
                     ),

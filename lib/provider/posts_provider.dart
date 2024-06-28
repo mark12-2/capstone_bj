@@ -109,4 +109,28 @@ class PostsProvider with ChangeNotifier {
       "timestamp": Timestamp.now(),
     });
   }
+
+
+  // adding a comment
+  Future<DocumentReference> addComment(String commentText, String postId) async {
+  UserModel? currentUserDetails = await fetchCurrentUserDetails();
+  if (currentUserDetails == null) {
+    throw Exception('Current user details could not be fetched.');
+  }
+
+  Map<String, dynamic> commentData = {
+    'commentText': commentText,
+    'postId': postId,
+    'username': currentUserDetails.name,
+    'userId': currentUserDetails.uid,
+    'createdAt': Timestamp.now(),
+  };
+
+  return FirebaseFirestore.instance
+     .collection('Posts')
+     .doc(postId)
+     .collection('Comments')
+     .add(commentData);
+}
+
 }

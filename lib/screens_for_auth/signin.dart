@@ -95,7 +95,7 @@ class _SignInPageState extends State<SignInPage> {
                             });
                       },
                       child: Padding(
-                        padding: const EdgeInsets.only(top: 2.0),
+                        padding: const EdgeInsets.only(top: 4.0),
                         child: Text(
                           "${selectedCountry.flagEmoji} + ${selectedCountry.phoneCode}",
                           style: const TextStyle(

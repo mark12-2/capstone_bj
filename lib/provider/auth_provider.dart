@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:capstone/model/user_model.dart';
@@ -8,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class AuthProvider extends ChangeNotifier {
   bool _isSignedIn = false;
@@ -53,7 +55,21 @@ class AuthProvider extends ChangeNotifier {
         verificationFailed: (error) {
           showSnackBar(context, "Verification failed: ${error.message}");
         },
-        codeSent: (verificationId, forceResendingToken) {
+        codeSent: (verificationId, forceResendingToken) async {
+          // Close the web view using JavaScript
+          final Completer<void> completer = Completer<void>();
+          WebView(
+            javascriptMode: JavascriptMode.unrestricted,
+            onWebViewCreated: (WebViewController webViewController) async {
+              await webViewController.loadUrl('javascript:window.close();');
+            },
+            onPageFinished: (String url) {
+              if (url == 'about:blank') {
+                completer.complete();
+              }
+            },
+          );
+          // Navigate to the OTP screen
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -100,10 +116,18 @@ class AuthProvider extends ChangeNotifier {
   }
 
   // check if user exists on database
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   Future<bool> checkExistingUser() async {
-    DocumentSnapshot snapshot =
-        await _firebaseFirestore.collection("users").doc(_uid).get();
-    return snapshot.exists;
+    if (_auth.currentUser != null) {
+      DocumentSnapshot snapshot = await _firebaseFirestore
+          .collection("users")
+          .doc(_auth.currentUser!.uid)
+          .get();
+      return snapshot.exists;
+    } else {
+      return false; // user is not authenticated
+    }
   }
 
   // saving user information to firebase firestore
