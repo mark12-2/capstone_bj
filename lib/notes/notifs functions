@@ -1,0 +1,10 @@
+
+// Send notification
+      final notificationProvider =
+          Provider.of<NotificationProvider>(context, listen: false);
+      await notificationProvider.jobApplicationNotification(
+        receiverId: receiverId,
+        senderId: _auth.currentUser!.uid,
+        senderName: _auth.currentUser!.displayName ?? 'Unknown',
+       notif: _commentTextController.text,
+      );

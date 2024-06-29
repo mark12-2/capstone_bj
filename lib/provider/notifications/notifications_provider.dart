@@ -89,13 +89,13 @@ class NotificationProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> commentNotification(
+  Future<void> jobApplicationNotification(
       {required String receiverId,
       required String senderId,
       required String senderName,
       required String notif}) async {
-    String? senderName;
     // Fetch the senderName from Firestore
+    String? senderName;
     await FirebaseFirestore.instance
         .collection('users')
         .doc(senderId)
@@ -104,8 +104,13 @@ class NotificationProvider with ChangeNotifier {
 
     if (senderName != null) {
       Notification notification = Notification(
-        id: _notificationsCollection.doc().id,
-        title: 'New Message',
+        id: _firestore
+            .collection('users')
+            .doc(receiverId)
+            .collection('notifications')
+            .doc()
+            .id,
+        title: 'New Application',
         notif: notif,
         senderName: senderName!,
         isRead: false,
@@ -116,19 +121,6 @@ class NotificationProvider with ChangeNotifier {
           .doc(receiverId)
           .collection('notifications')
           .add(notification.toMap());
-      notifyListeners();
     }
   }
 }
-
-
-
-// // Send notification
-//       final notificationProvider =
-//           Provider.of<NotificationProvider>(context, listen: false);
-//       await notificationProvider.createMessageNotification(
-//         receiverId: receiverId,
-//         senderId: _auth.currentUser!.uid,
-//         senderName: _auth.currentUser!.displayName ?? 'Unknown',
-//        notif: _commentTextController.text,
-//       );

@@ -2,9 +2,9 @@ import 'package:capstone/chats/messaging_roompage.dart';
 import 'package:capstone/default_screens/comment.dart';
 import 'package:capstone/provider/mapping/location_service.dart';
 import 'package:capstone/provider/notifications/notifications_provider.dart';
-import 'package:capstone/testing_file/employer_jobpost_view.dart';
 import 'package:capstone/provider/posts_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone/default_screens/notification.dart';
 import 'package:capstone/styles/textstyle.dart';
@@ -22,6 +22,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final ScrollController _scrollController = ScrollController();
   final _commentTextController = TextEditingController();
+  bool _isApplied = false;
 
   @override
   void dispose() {
@@ -39,7 +40,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final PostsProvider postDetails = Provider.of<PostsProvider>(context);
-
+    final FirebaseAuth auth = FirebaseAuth.instance;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 27, 74, 109),
@@ -309,46 +310,86 @@ class _HomePageState extends State<HomePage> {
                                     ),
 
                                     const SizedBox(width: 10),
-
-                                    role == 'Employer'
-                                        ? InkWell(
-                                            onTap: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      const EmployerJobpostView(),
-                                                ),
-                                              );
-                                            },
-                                            child: Container(
-                                              height: 53,
-                                              width: 180,
-                                              decoration: BoxDecoration(
-                                                border: Border.all(
-                                                  color: Colors.orange,
-                                                  width: 2,
-                                                ),
-                                                borderRadius:
-                                                    BorderRadius.circular(5),
-                                                color: Colors.white,
-                                              ),
-                                              child: Center(
-                                                child: Text(
-                                                  'Apply Job',
-                                                  style: CustomTextStyle
-                                                      .regularText
-                                                      .copyWith(
-                                                    color: const Color.fromARGB(
-                                                        255, 0, 0, 0),
-                                                    fontSize: responsiveSize(
-                                                        context, 0.03),
+                                    userId == auth.currentUser!.uid
+                                        ? Container()
+                                        : role == 'Employer'
+                                            ? InkWell(
+                                                child: GestureDetector(
+                                                  onTap: _isApplied
+                                                      ? null
+                                                      : () async {
+                                                          final notificationProvider =
+                                                              Provider.of<
+                                                                      NotificationProvider>(
+                                                                  context,
+                                                                  listen:
+                                                                      false);
+                                                          String receiverId =
+                                                              userId; // Get the receiver's ID
+                                                          await notificationProvider
+                                                              .jobApplicationNotification(
+                                                            receiverId:
+                                                                receiverId,
+                                                            senderId: auth
+                                                                .currentUser!
+                                                                .uid,
+                                                            senderName: auth
+                                                                    .currentUser!
+                                                                    .displayName ??
+                                                                'Unknown',
+                                                            notif:
+                                                                ', applied to your job entitled "$title"',
+                                                          );
+                                                          setState(() {
+                                                            _isApplied = true;
+                                                          });
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .showSnackBar(
+                                                            const SnackBar(
+                                                                content: Text(
+                                                                    'Successfully applied')),
+                                                          );
+                                                        },
+                                                  child: Container(
+                                                    height: 53,
+                                                    width: 180,
+                                                    decoration: BoxDecoration(
+                                                      border: Border.all(
+                                                        color: _isApplied
+                                                            ? Colors.grey
+                                                            : Colors.orange,
+                                                        width: 2,
+                                                      ),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              5),
+                                                      color: Colors.white,
+                                                    ),
+                                                    child: Center(
+                                                      child: Text(
+                                                        _isApplied
+                                                            ? 'Applied'
+                                                            : 'Apply Job',
+                                                        style: CustomTextStyle
+                                                            .regularText
+                                                            .copyWith(
+                                                          color: _isApplied
+                                                              ? Colors.grey
+                                                              : const Color
+                                                                  .fromARGB(
+                                                                  255, 0, 0, 0),
+                                                          fontSize:
+                                                              responsiveSize(
+                                                                  context,
+                                                                  0.03),
+                                                        ),
+                                                      ),
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                            ),
-                                          )
-                                        : Container(), // return empty container if role is not 'Employer'
+                                              )
+                                            : Container(), // return empty container if role is not 'Employer'
                                   ],
                                 ),
                               ],
