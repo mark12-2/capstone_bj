@@ -30,11 +30,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   void showCommentDialog(String postId, BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (dialogContext) => CommentScreen(postId: postId),
-  );
-}
+    showDialog(
+      context: context,
+      builder: (dialogContext) => CommentScreen(postId: postId),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final PostsProvider postDetails = Provider.of<PostsProvider>(context);
@@ -256,7 +257,8 @@ class _HomePageState extends State<HomePage> {
                                                   TextEditingController(
                                                       text: '$lat, $lon'));
                                             },
-                                            child: Text(location,
+                                            child: Text(
+                                                "$location (tap to view location)",
                                                 style: const TextStyle(
                                                     color: Colors.blue)),
                                           ),

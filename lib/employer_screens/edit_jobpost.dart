@@ -1,8 +1,10 @@
 import 'package:capstone/model/posts_model.dart';
 import 'package:capstone/provider/auth_provider.dart';
+import 'package:capstone/provider/mapping/location_service.dart';
 import 'package:capstone/provider/posts_provider.dart';
 import 'package:capstone/styles/responsive_utils.dart';
 import 'package:capstone/styles/textstyle.dart';
+import 'package:capstone/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +22,7 @@ class JobEditPost extends StatefulWidget {
 
 class _JobEditPostState extends State<JobEditPost> {
   late final AuthProvider _authProvider;
+  final _locationController = TextEditingController();
 
   @override
   void initState() {
@@ -134,13 +137,23 @@ class _JobEditPostState extends State<JobEditPost> {
                         onSaved: (value) => _type = value,
                       ),
                       const SizedBox(height: 20),
-                      TextFormField(
-                        initialValue: _location,
-                        decoration: customInputDecoration('Location'),
-                        maxLines: 5,
-                        minLines: 1,
-                        keyboardType: TextInputType.multiline,
-                        onSaved: (value) => _location = value,
+                      Column(
+                        children: [
+                          TextFormField(
+                            // initialValue: _location,
+                            controller: _locationController,
+                            decoration: customInputDecoration('Location'),
+                            maxLines: 5,
+                            minLines: 1,
+                            keyboardType: TextInputType.multiline,
+                            onSaved: (value) => _location = value,
+                          ),
+                          ElevatedButton(
+                            onPressed: () => showLocationPickerModal(
+                                context, _locationController),
+                            child: const Text('Show Location'),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 20),
                       Row(
@@ -167,6 +180,10 @@ class _JobEditPostState extends State<JobEditPost> {
   // update post method
   Future<void> _savePost() async {
     if (_formKey.currentState!.validate()) {
+      if (_locationController.text.isEmpty) {
+        showSnackBar(context, "Job Post has no location / address....");
+        return;
+      }
       _formKey.currentState!.save();
       try {
         final post = Post(

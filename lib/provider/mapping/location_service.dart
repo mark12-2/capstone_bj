@@ -18,7 +18,7 @@ void showLocationPickerModal(
           child: FlutterMap(
             options: MapOptions(
               initialCenter: LatLng(lat, lon),
-              initialZoom: 16.0,
+              initialZoom: 17.0,
               onTap: (tapPosition, point) {
                 controller.text = '${point.latitude}, ${point.longitude}';
                 Navigator.pop(context);
