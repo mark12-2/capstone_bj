@@ -221,7 +221,13 @@ class _EditUserInformationState extends State<EditUserInformation> {
                             width: MediaQuery.of(context).size.width * 0.90,
                             child: CustomButton(
                               buttonText: "Save",
-                              onPressed: () => storeData(),
+                              onPressed: () {
+                                storeData();
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                  content: Text('Profile edited successfully'),
+                                ));
+                              },
                             ),
                           ),
                           const SizedBox(height: 15),

@@ -9,6 +9,7 @@ import 'package:capstone/styles/custom_theme.dart';
 import 'package:capstone/styles/responsive_utils.dart';
 import 'package:capstone/styles/textstyle.dart';
 import 'package:capstone/utils/utils.dart';
+import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +22,8 @@ class UserInformation extends StatefulWidget {
 }
 
 class _UserInformationState extends State<UserInformation> {
+  final ConfettiController _confettiKey =
+      ConfettiController(duration: const Duration(seconds: 10));
   File? image;
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -133,8 +136,15 @@ class _UserInformationState extends State<UserInformation> {
                               radius: 50,
                             ),
                     ),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        'Tap to Select an Image',
+                        style: TextStyle(color: Colors.grey, fontSize: 12),
+                      ),
+                    ),
                     const SizedBox(
-                      height: 20,
+                      height: 5,
                     ),
                     Padding(
                       padding: const EdgeInsets.all(10),
@@ -188,8 +198,10 @@ class _UserInformationState extends State<UserInformation> {
                                 focusNode: _birthdayFocusNode,
                                 decoration: const InputDecoration(
                                     labelText: 'Birthday',
+                                    labelStyle: CustomTextStyle.regularText,
                                     suffixIcon: Icon(Icons.calendar_today),
                                     hintText: 'Select your birthday',
+                                    hintStyle: CustomTextStyle.regularText,
                                     enabledBorder: OutlineInputBorder(
                                       borderSide: BorderSide(
                                         color: Colors.grey,
@@ -236,6 +248,7 @@ class _UserInformationState extends State<UserInformation> {
                                 focusNode: fieldFocusNode,
                                 decoration: const InputDecoration(
                                   labelText: 'Find your Address',
+                                  labelStyle: CustomTextStyle.regularText,
                                   suffixIcon: Icon(Icons.search),
                                   enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
@@ -276,39 +289,52 @@ class _UserInformationState extends State<UserInformation> {
                             },
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 15),
                         // user type or role input
                         Padding(
-                          padding:
-                              const EdgeInsets.only(top: 8.0, right: 270.0),
+                          padding: const EdgeInsets.only(top: 8.0),
                           child: Column(
                             children: [
-                              const Text(
-                                'User Type',
-                                style: TextStyle(fontSize: 12),
-                              ),
-                              DropdownButton<String>(
-                                value: _roleSelection,
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    _roleSelection = newValue;
-                                  });
-                                },
-                                items: <String>[
-                                  'Job Hunter',
-                                  'Employer'
-                                ].map<DropdownMenuItem<String>>((String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(value),
-                                  );
-                                }).toList(),
+                              Container(
+                                height: 57.0,
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                decoration: BoxDecoration(
+                                  border:
+                                      Border.all(color: Colors.grey, width: 1),
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: DropdownButton<String>(
+                                  value: _roleSelection,
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      _roleSelection = newValue;
+                                    });
+                                  },
+                                  items: <String>['Job Hunter', 'Employer']
+                                      .map<DropdownMenuItem<String>>(
+                                          (String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(value),
+                                    );
+                                  }).toList(),
+                                  hint: const Padding(
+                                    padding: EdgeInsets.only(top: 8.0),
+                                    child: Text('Select your role'),
+                                  ),
+                                  style: CustomTextStyle.regularText,
+                                  isExpanded: true,
+                                  underline: Container(
+                                    height: 0,
+                                  ),
+                                ),
                               ),
                             ],
                           ),
                         ),
                         const SizedBox(
-                          height: 50,
+                          height: 40,
                         ),
                         // button for submition
                         SizedBox(
@@ -316,7 +342,63 @@ class _UserInformationState extends State<UserInformation> {
                           width: MediaQuery.of(context).size.width * 0.90,
                           child: CustomButton(
                             buttonText: "Continue",
-                            onPressed: () => storeData(),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return Dialog(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    elevation: 15,
+                                    child: Container(
+                                      height: 150,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: <Widget>[
+                                          ConfettiWidget(
+                                            confettiController: _confettiKey,
+                                            blastDirectionality:
+                                                BlastDirectionality.explosive,
+                                            colors: const [
+                                              Colors.orange,
+                                              Color.fromARGB(255, 7, 30, 47),
+                                              Colors.white,
+                                            ],
+                                          ),
+                                          const SizedBox(height: 15),
+                                          Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Align(
+                                                alignment: Alignment.center,
+                                                child: Text(
+                                                    "Welcome to BlueJobs!",
+                                                    style: CustomTextStyle
+                                                        .titleText
+                                                        .copyWith(
+                                                            fontSize:
+                                                                responsiveSize(
+                                                                    context,
+                                                                    0.05))),
+                                              )),
+                                          const SizedBox(height: 20),
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              storeData();
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text('Get Started'),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                              _confettiKey.play();
+                            },
                           ),
                         ),
                         const SizedBox(

@@ -44,11 +44,11 @@ class _SignInPageState extends State<SignInPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // svg asset
-              Image.asset(
-                'assets/images/bluejobs.png',
-                width: 250,
-                height: 250,
-              ),
+              // Image.asset(
+              //   'assets/images/bluejobs.png',
+              //   width: 250,
+              //   height: 250,
+              // ),
               // const SizedBox(height: 20),
               Text(
                 'Connecting Blue Collars. One Tap at a time!',
@@ -57,6 +57,7 @@ class _SignInPageState extends State<SignInPage> {
                   fontSize: responsiveSize(context, 0.03),
                 ),
               ),
+              const SizedBox(height: 20),
               Text(
                 'Enter your Phone Number',
                 style: CustomTextStyle.semiBoldText.copyWith(
@@ -64,7 +65,7 @@ class _SignInPageState extends State<SignInPage> {
                   fontSize: responsiveSize(context, 0.03),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
               TextFormField(
                 controller: phoneController,
                 keyboardType: TextInputType.number,
@@ -78,9 +79,9 @@ class _SignInPageState extends State<SignInPage> {
                   labelStyle: CustomTextStyle.semiBoldText,
                   fillColor: Colors.white,
                   filled: true,
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                   prefixIcon: Container(
-                    padding: EdgeInsets.all(10.0),
+                    padding: const EdgeInsets.all(10.0),
                     child: InkWell(
                       onTap: () {
                         showCountryPicker(

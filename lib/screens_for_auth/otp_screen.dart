@@ -1,7 +1,9 @@
+import 'dart:async';
+
 import 'package:capstone/navigation/employer_navigation.dart';
 import 'package:capstone/navigation/jobhunter_navigation.dart';
 import 'package:capstone/screens_for_auth/user_information.dart';
-import 'package:capstone/styles/textstyle.dart';
+import 'package:capstone/styles/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone/provider/auth_provider.dart';
 import 'package:capstone/utils/utils.dart';
@@ -19,6 +21,15 @@ class OtpScreen extends StatefulWidget {
 class _OtpScreenState extends State<OtpScreen> {
   String? otpCode;
   final bool isLoading = false;
+  int _timerTick = 30;
+  bool isResendEnabled = true;
+  Timer? _timer;
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,8 +106,23 @@ class _OtpScreenState extends State<OtpScreen> {
                           });
                         },
                       ),
-                      const SizedBox(height: 25),
-                      TextButton(
+                      const SizedBox(height: 35),
+                      // TextButton(
+                      //     onPressed: () {
+                      //       if (otpCode != null) {
+                      //         verifyOtp(context, otpCode!);
+                      //       } else {
+                      //         showSnackBar(context, "Enter 6-Digit code");
+                      //       }
+                      //     },
+                      //     child: Text(
+                      //       "Verify",
+                      //       style: CustomTextStyle.regularText.copyWith(
+                      //         color: Colors.white,
+                      //       ),
+                      //     )),
+                      SizedBox(
+                        child: CustomButton(
                           onPressed: () {
                             if (otpCode != null) {
                               verifyOtp(context, otpCode!);
@@ -104,28 +130,34 @@ class _OtpScreenState extends State<OtpScreen> {
                               showSnackBar(context, "Enter 6-Digit code");
                             }
                           },
-                          child: Text(
-                            "Verify",
-                            style: CustomTextStyle.regularText.copyWith(
-                              color: Colors.white,
-                            ),
-                          )),
-                      const SizedBox(height: 20),
-                      const Text(
-                        "Didn't receive any code?",
-                        style: TextStyle(
+                          buttonText: "Verify",
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      Text(
+                        "Didn't receive any code? ${isResendEnabled ? '' : 'Resend in $_timerTick seconds'}",
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                       ),
                       const SizedBox(height: 15),
-                      const Text(
-                        "Resend New Code",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.orangeAccent,
+                      TextButton(
+                        onPressed: isResendEnabled
+                            ? () {
+                                resendOtp(context);
+                              }
+                            : null,
+                        child: Text(
+                          "Resend New Code",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: isResendEnabled
+                                ? Colors.orangeAccent
+                                : Colors.grey,
+                          ),
                         ),
                       ),
                     ],
@@ -207,5 +239,24 @@ class _OtpScreenState extends State<OtpScreen> {
         });
       },
     );
+  }
+
+  // resend otp
+  void resendOtp(BuildContext context) {
+    setState(() {
+      isResendEnabled = false;
+      _timerTick = 30;
+    });
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        _timerTick--;
+        if (_timerTick == 0) {
+          _timer?.cancel();
+          setState(() {
+            isResendEnabled = true;
+          });
+        }
+      });
+    });
   }
 }
