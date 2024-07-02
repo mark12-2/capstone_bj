@@ -76,7 +76,7 @@ class _SignInPageState extends State<SignInPage> {
                 },
                 decoration: InputDecoration(
                   hintText: 'Phone Number',
-                  labelStyle: CustomTextStyle.semiBoldText,
+                  hintStyle: CustomTextStyle.regularText,
                   fillColor: Colors.white,
                   filled: true,
                   border: const OutlineInputBorder(),

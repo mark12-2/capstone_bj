@@ -1,12 +1,10 @@
 import 'package:capstone/chats/chatbubble.dart';
 import 'package:capstone/provider/messaging/messaging_services.dart';
-import 'package:capstone/provider/notifications/notifications_provider.dart';
 import 'package:capstone/styles/textstyle.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 
 class MessagingBubblePage extends StatelessWidget {
   final String receiverName;

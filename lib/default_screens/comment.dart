@@ -21,7 +21,7 @@ class _CommentScreenState extends State<CommentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Comments'),
+        title: const Text('Comments'),
       ),
       body: Column(
         children: [
@@ -57,19 +57,19 @@ class _CommentScreenState extends State<CommentScreen> {
                             Text(formattedTime),
                             commentSnapshot['userId'] == currentUserId
                                 ? IconButton(
-                                    icon: Icon(Icons.delete),
+                                    icon: const Icon(Icons.delete),
                                     onPressed: () {
                                       deleteComment(commentSnapshot.id);
                                     },
                                   )
-                                : Container(), // or SizedBox.shrink() to take up no space
+                                : Container(), 
                           ],
                         ),
                       );
                     },
                   );
                 } else {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
               },
             ),
@@ -81,7 +81,7 @@ class _CommentScreenState extends State<CommentScreen> {
                 Expanded(
                   child: TextField(
                     controller: _commentTextController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Add a comment',
                     ),
                   ),
@@ -89,12 +89,11 @@ class _CommentScreenState extends State<CommentScreen> {
                 ElevatedButton(
                   onPressed: () async {
                     if (_commentTextController.text.isNotEmpty) {
-                      String comment = _commentTextController.text;
                       addComment(context, widget.postId);
                       _commentTextController.clear();
                     }
                   },
-                  child: Text('Add Comment'),
+                  child: const Text('Add Comment'),
                 ),
               ],
             ),

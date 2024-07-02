@@ -28,6 +28,7 @@ class _UserInformationState extends State<UserInformation> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   String? _roleSelection;
+  String? _sex;
   final _birthdayController = TextEditingController();
   String? _address;
   // focus node - name and email
@@ -185,6 +186,35 @@ class _UserInformationState extends State<UserInformation> {
                           ),
                         const SizedBox(
                           height: 15,
+                        ),
+
+                        // sex input
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Column(
+                            children: [
+                              RadioListTile(
+                                title: const Text('Male'),
+                                value: 'Male',
+                                groupValue: _sex,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _sex = value as String?;
+                                  });
+                                },
+                              ),
+                              RadioListTile(
+                                title: const Text('Female'),
+                                value: 'Female',
+                                groupValue: _sex,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _sex = value as String?;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
                         ),
 
                         // birthdate input
@@ -426,6 +456,7 @@ class _UserInformationState extends State<UserInformation> {
       name: _nameController.text.trim(),
       email: _emailController.text.trim(),
       role: _roleSelection?.trim() ?? "",
+      sex: _sex ?? "",
       birthdate: _birthdayController.text.trim(),
       address: _address?.trim() ?? "",
       profilePic: "",
