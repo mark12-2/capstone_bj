@@ -285,10 +285,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                     ],
                                   ),
                                   const SizedBox(height: 15),
-                                  Text(
-                                    title,
-                                    style: CustomTextStyle.semiBoldText,
-                                  ),
+                                  role == 'Employer'
+                                      ? Text(
+                                          title,
+                                          style: CustomTextStyle.semiBoldText,
+                                        )
+                                      : Container(),
                                   const SizedBox(height: 15),
                                   Text(
                                     description,

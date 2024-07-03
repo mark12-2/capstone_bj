@@ -1,7 +1,6 @@
 import 'package:capstone/chats/messaging_page.dart';
 import 'package:capstone/default_screens/home.dart';
 import 'package:capstone/employer_screens/create_jobpost.dart';
-import 'package:capstone/employer_screens/employer_profile.dart';
 import 'package:capstone/testing_file/home_xample.dart';
 import 'package:flutter/material.dart';
 

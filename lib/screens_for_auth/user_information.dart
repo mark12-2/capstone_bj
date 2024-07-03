@@ -190,11 +190,23 @@ class _UserInformationState extends State<UserInformation> {
 
                         // sex input
                         Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
+                          padding: const EdgeInsets.all(8.0),
                           child: Column(
                             children: [
+                              const Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Sex',
+                                    style: CustomTextStyle.regularText,
+                                  ),
+                                ],
+                              ),
                               RadioListTile(
-                                title: const Text('Male'),
+                                title: const Text(
+                                  'Male',
+                                  style: CustomTextStyle.regularText,
+                                ),
                                 value: 'Male',
                                 groupValue: _sex,
                                 onChanged: (value) {
@@ -204,7 +216,8 @@ class _UserInformationState extends State<UserInformation> {
                                 },
                               ),
                               RadioListTile(
-                                title: const Text('Female'),
+                                title: const Text('Female',
+                                    style: CustomTextStyle.regularText),
                                 value: 'Female',
                                 groupValue: _sex,
                                 onChanged: (value) {
@@ -219,7 +232,7 @@ class _UserInformationState extends State<UserInformation> {
 
                         // birthdate input
                         Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
+                          padding: const EdgeInsets.only(top: 5.0),
                           child: GestureDetector(
                             onTap: () => _selectDate(context),
                             child: AbsorbPointer(

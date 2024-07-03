@@ -41,6 +41,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final PostsProvider postDetails = Provider.of<PostsProvider>(context);
     final FirebaseAuth auth = FirebaseAuth.instance;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 27, 74, 109),
@@ -245,6 +246,10 @@ class _HomePageState extends State<HomePage> {
                                 role == 'Employer'
                                     ? Row(
                                         children: [
+                                          const Icon(
+                                            Icons.location_pin,
+                                            color: Colors.blue,
+                                          ),
                                           GestureDetector(
                                             onTap: () async {
                                               final locations =
@@ -278,119 +283,192 @@ class _HomePageState extends State<HomePage> {
 
                                 const SizedBox(height: 20),
 
-                                // comment section
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    InkWell(
-                                      onTap: () {
-                                        showCommentDialog(post.id, context);
-                                      },
-                                      child: Container(
-                                        height: 53,
-                                        width: 185,
-                                        decoration: BoxDecoration(
-                                          color: const Color.fromARGB(
-                                              255, 7, 30, 47),
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            'Comment',
-                                            style: CustomTextStyle.regularText
-                                                .copyWith(
-                                              color: Colors.white,
-                                              fontSize:
-                                                  responsiveSize(context, 0.03),
+                                // comment section and like
+                                Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          InkWell(
+                                            onTap: () async {
+                                              final postId = post.id;
+                                              final userId =
+                                                  auth.currentUser!.uid;
+
+                                              final postDoc =
+                                                  await FirebaseFirestore
+                                                      .instance
+                                                      .collection('Posts')
+                                                      .doc(postId)
+                                                      .get();
+
+                                              if (postDoc.exists) {
+                                                final data = postDoc.data()
+                                                    as Map<String, dynamic>;
+
+                                                if (data.containsKey('likes')) {
+                                                  final likes = (data['likes']
+                                                          as List<dynamic>)
+                                                      .map((e) => e as String)
+                                                      .toList();
+
+                                                  if (likes.contains(userId)) {
+                                                    likes.remove(userId);
+                                                  } else {
+                                                    likes.add(userId);
+                                                  }
+
+                                                  await postDoc.reference
+                                                      .update({'likes': likes});
+                                                } else {
+                                                  await postDoc.reference
+                                                      .update({
+                                                    'likes': [userId]
+                                                  });
+                                                }
+                                              }
+                                            },
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.thumb_up_alt_rounded,
+                                                  color: post.data() != null &&
+                                                          (post.data() as Map<
+                                                                  String,
+                                                                  dynamic>)
+                                                              .containsKey(
+                                                                  'likes') &&
+                                                          ((post.data() as Map<
+                                                                      String,
+                                                                      dynamic>)['likes']
+                                                                  as List<
+                                                                      dynamic>)
+                                                              .contains(
+                                                                  auth.currentUser!.uid)
+                                                      ? Colors.blue
+                                                      : Colors.grey,
+                                                ),
+                                                const SizedBox(width: 5),
+                                                const Text(
+                                                  'React',
+                                                  style: CustomTextStyle
+                                                      .regularText,
+                                                ),
+                                              ],
                                             ),
                                           ),
-                                        ),
+                                          const SizedBox(width: 55),
+                                          InkWell(
+                                            onTap: () {
+                                              showCommentDialog(
+                                                  post.id, context);
+                                            },
+                                            child: const Row(
+                                              children: [
+                                                Icon(Icons.comment),
+                                                SizedBox(width: 5),
+                                                Text(
+                                                  'Comment',
+                                                  style: CustomTextStyle
+                                                      .regularText,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 50,
+                                          )
+                                        ],
                                       ),
-                                    ),
 
-                                    const SizedBox(width: 10),
-                                    userId == auth.currentUser!.uid
-                                        ? Container()
-                                        : role == 'Employer'
-                                            ? InkWell(
-                                                child: GestureDetector(
-                                                  onTap: _isApplied
-                                                      ? null
-                                                      : () async {
-                                                          final notificationProvider =
-                                                              Provider.of<
-                                                                      NotificationProvider>(
-                                                                  context,
-                                                                  listen:
-                                                                      false);
-                                                          String receiverId =
-                                                              userId; // Get the receiver's ID
-                                                          await notificationProvider
-                                                              .jobApplicationNotification(
-                                                            receiverId:
-                                                                receiverId,
-                                                            senderId: auth
-                                                                .currentUser!
-                                                                .uid,
-                                                            senderName: auth
-                                                                    .currentUser!
-                                                                    .displayName ??
-                                                                'Unknown',
-                                                            notif:
-                                                                ', applied to your job entitled "$title"',
-                                                          );
-                                                          setState(() {
-                                                            _isApplied = true;
-                                                          });
-                                                          ScaffoldMessenger.of(
-                                                                  context)
-                                                              .showSnackBar(
-                                                            const SnackBar(
-                                                                content: Text(
-                                                                    'Successfully applied')),
-                                                          );
-                                                        },
-                                                  child: Container(
-                                                    height: 53,
-                                                    width: 180,
-                                                    decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                        color: _isApplied
-                                                            ? Colors.grey
-                                                            : Colors.orange,
-                                                        width: 2,
-                                                      ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              5),
-                                                      color: Colors.white,
-                                                    ),
-                                                    child: Center(
-                                                      child: Text(
-                                                        _isApplied
-                                                            ? 'Applied'
-                                                            : 'Apply Job',
-                                                        style: CustomTextStyle
-                                                            .regularText
-                                                            .copyWith(
+                                      const SizedBox(width: 45),
+                                      userId == auth.currentUser!.uid
+                                          ? Container()
+                                          : role == 'Employer'
+                                              ? InkWell(
+                                                  child: GestureDetector(
+                                                    onTap: _isApplied
+                                                        ? null
+                                                        : () async {
+                                                            final notificationProvider =
+                                                                Provider.of<
+                                                                        NotificationProvider>(
+                                                                    context,
+                                                                    listen:
+                                                                        false);
+                                                            String receiverId =
+                                                                userId;
+                                                            await notificationProvider
+                                                                .jobApplicationNotification(
+                                                              receiverId:
+                                                                  receiverId,
+                                                              senderId: auth
+                                                                  .currentUser!
+                                                                  .uid,
+                                                              senderName: auth
+                                                                      .currentUser!
+                                                                      .displayName ??
+                                                                  'Unknown',
+                                                              notif:
+                                                                  ', applied to your job entitled "$title"',
+                                                            );
+                                                            setState(() {
+                                                              _isApplied = true;
+                                                            });
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .showSnackBar(
+                                                              const SnackBar(
+                                                                  content: Text(
+                                                                      'Successfully applied')),
+                                                            );
+                                                          },
+                                                    child: Container(
+                                                      height: 53,
+                                                      width: 105,
+                                                      decoration: BoxDecoration(
+                                                        border: Border.all(
                                                           color: _isApplied
                                                               ? Colors.grey
-                                                              : const Color
-                                                                  .fromARGB(
-                                                                  255, 0, 0, 0),
-                                                          fontSize:
-                                                              responsiveSize(
-                                                                  context,
-                                                                  0.03),
+                                                              : Colors.orange,
+                                                          width: 2,
+                                                        ),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(5),
+                                                        color: Colors.white,
+                                                      ),
+                                                      child: Center(
+                                                        child: Text(
+                                                          _isApplied
+                                                              ? 'Applied'
+                                                              : 'Apply Job',
+                                                          style: CustomTextStyle
+                                                              .regularText
+                                                              .copyWith(
+                                                            color: _isApplied
+                                                                ? Colors.grey
+                                                                : const Color
+                                                                    .fromARGB(
+                                                                    255,
+                                                                    0,
+                                                                    0,
+                                                                    0),
+                                                            fontSize:
+                                                                responsiveSize(
+                                                                    context,
+                                                                    0.03),
+                                                          ),
                                                         ),
                                                       ),
                                                     ),
                                                   ),
-                                                ),
-                                              )
-                                            : Container(), // return empty container if role is not 'Employer'
-                                  ],
+                                                )
+                                              : Container(), // return empty container if role is not 'Employer'
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),

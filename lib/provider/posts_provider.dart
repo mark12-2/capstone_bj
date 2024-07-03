@@ -53,6 +53,7 @@ class PostsProvider with ChangeNotifier {
       "location": post.location ?? '',
       "rate": post.rate,
       "timestamp": Timestamp.now(),
+      "likes": []
     });
   }
 
@@ -132,5 +133,6 @@ class PostsProvider with ChangeNotifier {
      .collection('Comments')
      .add(commentData);
 }
+
 
 }

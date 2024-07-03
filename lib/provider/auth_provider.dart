@@ -9,7 +9,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 class AuthProvider extends ChangeNotifier {
   bool _isSignedIn = false;
@@ -56,19 +55,6 @@ class AuthProvider extends ChangeNotifier {
           showSnackBar(context, "Verification failed: ${error.message}");
         },
         codeSent: (verificationId, forceResendingToken) async {
-          // Close the web view using JavaScript
-          final Completer<void> completer = Completer<void>();
-          WebView(
-            javascriptMode: JavascriptMode.unrestricted,
-            onWebViewCreated: (WebViewController webViewController) async {
-              await webViewController.loadUrl('javascript:window.close();');
-            },
-            onPageFinished: (String url) {
-              if (url == 'about:blank') {
-                completer.complete();
-              }
-            },
-          );
           // Navigate to the OTP screen
           Navigator.push(
             context,
@@ -82,6 +68,23 @@ class AuthProvider extends ChangeNotifier {
     } on FirebaseAuthException catch (e) {
       showSnackBar(context, e.message.toString());
     }
+  }
+
+// resend otp
+  Future<void> resendOtp(String phoneNumber) async {
+    await _firebaseAuth.verifyPhoneNumber(
+      phoneNumber: phoneNumber,
+      verificationCompleted: (PhoneAuthCredential phoneAuthCredential) async {
+        await _firebaseAuth.signInWithCredential(phoneAuthCredential);
+      },
+      verificationFailed: (error) {
+        // Handle the verification failed case
+      },
+      codeSent: (verificationId, forceResendingToken) async {
+        // Handle the resend OTP flow
+      },
+      codeAutoRetrievalTimeout: (verificationId) {},
+    );
   }
 
   // otp verification
