@@ -351,15 +351,15 @@ class _HomePageState extends State<HomePage> {
                                                       : Colors.grey,
                                                 ),
                                                 const SizedBox(width: 5),
-                                                const Text(
-                                                  'React',
+                                                Text(
+                                                  'React (${(post.data() as Map<String, dynamic>)['likes']?.length ?? 0})',
                                                   style: CustomTextStyle
                                                       .regularText,
                                                 ),
                                               ],
                                             ),
                                           ),
-                                          const SizedBox(width: 55),
+                                          const SizedBox(width: 45),
                                           InkWell(
                                             onTap: () {
                                               showCommentDialog(
@@ -370,7 +370,7 @@ class _HomePageState extends State<HomePage> {
                                                 Icon(Icons.comment),
                                                 SizedBox(width: 5),
                                                 Text(
-                                                  'Comment',
+                                                  'Comments',
                                                   style: CustomTextStyle
                                                       .regularText,
                                                 ),
@@ -389,42 +389,56 @@ class _HomePageState extends State<HomePage> {
                                           : role == 'Employer'
                                               ? InkWell(
                                                   child: GestureDetector(
-                                                    onTap: _isApplied
-                                                        ? null
-                                                        : () async {
-                                                            final notificationProvider =
-                                                                Provider.of<
-                                                                        NotificationProvider>(
-                                                                    context,
-                                                                    listen:
-                                                                        false);
-                                                            String receiverId =
-                                                                userId;
-                                                            await notificationProvider
-                                                                .jobApplicationNotification(
-                                                              receiverId:
-                                                                  receiverId,
-                                                              senderId: auth
-                                                                  .currentUser!
-                                                                  .uid,
-                                                              senderName: auth
-                                                                      .currentUser!
-                                                                      .displayName ??
-                                                                  'Unknown',
-                                                              notif:
-                                                                  ', applied to your job entitled "$title"',
-                                                            );
-                                                            setState(() {
-                                                              _isApplied = true;
-                                                            });
-                                                            ScaffoldMessenger
-                                                                    .of(context)
-                                                                .showSnackBar(
-                                                              const SnackBar(
-                                                                  content: Text(
-                                                                      'Successfully applied')),
-                                                            );
-                                                          },
+                                                    onTap: () async {
+                                                      final notificationProvider =
+                                                          Provider.of<
+                                                                  NotificationProvider>(
+                                                              context,
+                                                              listen: false);
+                                                      String receiverId =
+                                                          userId;
+                                                      String applicantName = auth
+                                                              .currentUser!
+                                                              .displayName ??
+                                                          'Unknown';
+                                                      String applicantId =
+                                                          auth.currentUser!.uid;
+
+                                                      await notificationProvider
+                                                          .someNotification(
+                                                        receiverId: receiverId,
+                                                        senderId: auth
+                                                            .currentUser!.uid,
+                                                        senderName:
+                                                            applicantName,
+                                                        title:
+                                                            'New Application',
+                                                        notif:
+                                                            ', applied to your job entitled "$title"',
+                                                      );
+
+                                                      // Save the applicant's information to the job post
+                                                      await Provider.of<
+                                                                  PostsProvider>(
+                                                              context,
+                                                              listen: false)
+                                                          .addApplicant(
+                                                              post.id,
+                                                              applicantId,
+                                                              applicantName);
+
+                                                      setState(() {
+                                                        _isApplied = true;
+                                                      });
+
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                        const SnackBar(
+                                                            content: Text(
+                                                                'Successfully applied')),
+                                                      );
+                                                    },
                                                     child: Container(
                                                       height: 53,
                                                       width: 105,

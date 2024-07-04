@@ -2,159 +2,102 @@ import 'package:capstone/employer_screens/edit_jobpost.dart';
 import 'package:capstone/jobhunter_screens/edit_post.dart';
 import 'package:capstone/provider/mapping/location_service.dart';
 import 'package:capstone/provider/posts_provider.dart';
-import 'package:capstone/screens_for_auth/edit_user_information.dart';
-import 'package:capstone/screens_for_auth/signin.dart';
 import 'package:capstone/styles/responsive_utils.dart';
 import 'package:capstone/styles/textstyle.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:provider/provider.dart';
-import 'package:capstone/provider/auth_provider.dart' as auth_provider;
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+  final String userId;
+
+  const ProfilePage({super.key, required this.userId});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  String? _userId;
+  final double coverHeight = 200;
+  final double profileHeight = 100;
+  Map<String, dynamic>? userData;
 
   @override
   void initState() {
     super.initState();
-    _userId = FirebaseAuth.instance.currentUser?.uid;
+    fetchUserData();
   }
 
-  final double coverHeight = 200;
-  final double profileHeight = 100;
+  Future<void> fetchUserData() async {
+    final userDoc = await FirebaseFirestore.instance.collection('users').doc(widget.userId).get();
+    if (userDoc.exists) {
+      setState(() {
+        userData = userDoc.data();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final userLoggedIn =
-        Provider.of<auth_provider.AuthProvider>(context, listen: false);
     return DefaultTabController(
-      length: 3,
+      length: 2,
       child: Scaffold(
         appBar: AppBar(
-          actions: [
-            PopupMenuButton(
-              icon: const Padding(
-                padding: EdgeInsets.all(10.0),
-                child: Icon(
-                  Icons.more_vert,
-                  size: 35,
-                ),
-              ),
-              itemBuilder: (context) => [
-                const PopupMenuItem(
-                  value: 'editProfile',
-                  child: Text('Edit Profile'),
-                ),
-                const PopupMenuItem(
-                  value: 'signOut',
-                  child: Text('Sign Out'),
-                ),
-              ],
-              onSelected: (value) {
-                if (value == 'editProfile') {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const EditUserInformation(),
-                    ),
-                  );
-                } else if (value == 'signOut') {
-                  userLoggedIn.userSignOut().then(
-                        (value) => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SignInPage(),
-                          ),
-                        ),
-                      );
-                }
-              },
-            )
-          ],
+          title: Text(userData?['name'] ?? 'Profile'),
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Row(
+        body: userData == null
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+                child: Column(
                   children: [
-                    buildProfilePicture(),
-                    const SizedBox(width: 20),
-                    buildProfile(),
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Row(
+                        children: [
+                          buildProfilePicture(),
+                          const SizedBox(width: 20),
+                          buildProfile(),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    buildTabBar(),
+                    SizedBox(
+                      height: 500,
+                      child: buildTabBarView(),
+                    ),
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
-              buildTabBar(),
-              SizedBox(
-                height: 500,
-                child: buildTabBarView(),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
 
-  // Widget buildHeader() {
-  //   return Stack(
-  //     alignment: Alignment.center,
-  //     clipBehavior: Clip.none,
-  //     children: [
-  //       buildCoverImage(),
-  //       Positioned(
-  //         top: coverHeight - profileHeight / 2,
-  //         child: buildProfilePicture(),
-  //       ),
-  //     ],
-  //   );
-  // }
-
-  // Widget buildCoverImage() => Container(
-  //       color: Colors.grey,
-  //       height: coverHeight,
-  //       width: double.infinity,
-  //     );
-
   Widget buildProfilePicture() {
-    final userLoggedIn =
-        Provider.of<auth_provider.AuthProvider>(context, listen: false);
     return CircleAvatar(
       radius: profileHeight / 2,
-      backgroundImage: userLoggedIn.userModel.profilePic != null
-          ? NetworkImage(userLoggedIn.userModel.profilePic!)
+      backgroundImage: userData?['profilePic'] != null
+          ? NetworkImage(userData!['profilePic'])
           : null,
       backgroundColor: Colors.white,
-      child: userLoggedIn.userModel.profilePic == null
+      child: userData?['profilePic'] == null
           ? Icon(Icons.person, size: profileHeight / 2)
           : null,
     );
   }
 
   Widget buildProfile() {
-    final userLoggedIn =
-        Provider.of<auth_provider.AuthProvider>(context, listen: false);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Text(
-            userLoggedIn.userModel.name,
+            userData?['name'] ?? '',
             style: CustomTextStyle.semiBoldText,
           ),
           Text(
-            userLoggedIn.userModel.role,
+            userData?['role'] ?? '',
             style: CustomTextStyle.typeRegularText,
           ),
         ],
@@ -173,10 +116,6 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             Container(
               width: MediaQuery.of(context).size.width / 3,
-              child: const Tab(text: 'Resume'),
-            ),
-            Container(
-              width: MediaQuery.of(context).size.width / 3,
               child: const Tab(text: 'About'),
             ),
           ],
@@ -188,17 +127,16 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget buildTabBarView() => TabBarView(
         children: [
-          buildMyPostsTab(),
-          buildResumeTab(),
-          Center(child: Text('About')),
+          buildPostsTab(),
+          buildAboutTab(),
         ],
       );
 
-  Widget buildMyPostsTab() {
+  Widget buildPostsTab() {
     final PostsProvider postsProvider = PostsProvider();
     return StreamBuilder<QuerySnapshot>(
-        stream: _userId != null
-            ? postsProvider.getSpecificPostsStream(_userId)
+        stream: widget.userId != null
+            ? postsProvider.getSpecificPostsStream(widget.userId)
             : const Stream.empty(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -396,9 +334,7 @@ class _ProfilePageState extends State<ProfilePage> {
         });
   }
 
-  Widget buildResumeTab() {
-    final userLoggedIn =
-        Provider.of<auth_provider.AuthProvider>(context, listen: false);
+  Widget buildAboutTab() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(10.0),
       child: Container(
@@ -406,11 +342,10 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            buildResumeItem('Name', userLoggedIn.userModel.name),
-            buildResumeItem(
-                'Contact Number', userLoggedIn.userModel.phoneNumber),
-            buildResumeItem('Sex', userLoggedIn.userModel.sex),
-            buildResumeItem('Address', userLoggedIn.userModel.address),
+            buildResumeItem('Name', userData?['name'] ?? ''),
+            buildResumeItem('Contact Number', userData?['phoneNumber'] ?? ''),
+            buildResumeItem('Sex', userData?['sex'] ?? ''),
+            buildResumeItem('Address', userData?['address'] ?? ''),
           ],
         ),
       ),

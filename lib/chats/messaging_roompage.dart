@@ -1,10 +1,12 @@
 import 'package:capstone/chats/chatbubble.dart';
 import 'package:capstone/provider/messaging/messaging_services.dart';
+import 'package:capstone/provider/notifications/notifications_provider.dart';
 import 'package:capstone/styles/textstyle.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class MessagingBubblePage extends StatelessWidget {
   final String receiverName;
@@ -21,6 +23,17 @@ class MessagingBubblePage extends StatelessWidget {
   void sendMessage(BuildContext context) async {
     if (_messageController.text.isNotEmpty) {
       await _chatService.sendMessage(receiverId, _messageController.text);
+
+      // Send notification
+      final notificationProvider =
+          Provider.of<NotificationProvider>(context, listen: false);
+      await notificationProvider.someNotification(
+        receiverId: receiverId,
+        senderId: _auth.currentUser!.uid,
+        senderName: _auth.currentUser!.displayName ?? 'Unknown',
+        title: 'New Message',
+        notif: ' sent you a message: "${_messageController.text}"',
+      );
 
       // clear message after sending
       _messageController.clear();
@@ -81,8 +94,11 @@ class MessagingBubblePage extends StatelessWidget {
       child: Container(
         alignment: alignment,
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          data['senderName'] == _auth.currentUser!.uid
-              ? Container()
+          data['senderId'] == _auth.currentUser!.uid
+              ? const Text(
+                  'You',
+                  style: CustomTextStyle.chatusernameRegularText,
+                )
               : Text(
                   data['senderName'],
                   style: CustomTextStyle.chatusernameRegularText,

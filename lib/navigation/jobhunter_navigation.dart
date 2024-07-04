@@ -2,7 +2,7 @@ import 'package:capstone/chats/messaging_page.dart';
 import 'package:capstone/default_screens/home.dart';
 import 'package:capstone/default_screens/search.dart';
 import 'package:capstone/jobhunter_screens/create_post.dart';
-import 'package:capstone/testing_file/home_xample.dart';
+import 'package:capstone/jobhunter_screens/jobhunter_profile.dart';
 import 'package:flutter/material.dart';
 
 class JobhunterNavigation extends StatefulWidget {
@@ -19,7 +19,7 @@ class _JobhunterNavigationState extends State<JobhunterNavigation> {
     const SearchPage(),
     const PostPage(),
     const MessagingPage(),
-    const ProfilePage(),
+    const JobHunterProfilePage(),
   ];
 
   @override

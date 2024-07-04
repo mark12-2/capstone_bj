@@ -1,4 +1,4 @@
-import 'package:capstone/testing_file/home_xample.dart';
+import 'package:capstone/default_screens/view_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone/styles/custom_theme.dart';
@@ -83,27 +83,25 @@ class _SearchPageState extends State<SearchPage> {
             child: ListView.builder(
               itemCount: _filteredUsers.length,
               itemBuilder: (context, index) {
+                var user = _filteredUsers[index];
                 return ListTile(
                   leading: CircleAvatar(
-                    backgroundImage:
-                        NetworkImage(_filteredUsers[index]['profilePic']),
+                    backgroundImage: NetworkImage(user['profilePic']),
                   ),
-                  title: Text(_filteredUsers[index]['name']),
-                  subtitle: Text(_filteredUsers[index]['role']),
+                  title: Text(user['name']),
+                  subtitle: Text(user['role']),
                   onTap: () {
-                    // Navigate to the profile page
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) =>
-                    //         ProfilePage(userId: _filteredUsers[index]['id']),
-                    //   ),
-                    // );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProfilePage(userId: user['id']),
+                      ),
+                    );
                   },
                 );
               },
             ),
-          )
+          ),
         ],
       ),
     );

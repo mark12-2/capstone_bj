@@ -43,24 +43,22 @@ class NotificationProvider with ChangeNotifier {
   late CollectionReference _notificationsCollection;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  List<String> _unreadNotificationsIds = [];
-
-  NotificationProvider() {
-    _notificationsCollection = _firestore.collection('notifications');
-    init();
-  }
-
   List<Notification> _notifications = [];
   int _unreadNotifications = 0;
 
   List<Notification> get notifications => _notifications;
   int get unreadNotifications => _unreadNotifications;
 
+  NotificationProvider() {
+    init();
+  }
+
   void init() {
     final userId = _auth.currentUser!.uid;
     _notificationsCollection =
         _firestore.collection('users').doc(userId).collection('notifications');
 
+    // Fetch notifications from the current user's notifications collection
     _notificationsCollection.snapshots().listen((snapshot) {
       _notifications = snapshot.docs
           .map(
@@ -70,29 +68,72 @@ class NotificationProvider with ChangeNotifier {
           _notifications.where((notification) => !notification.isRead).length;
       notifyListeners();
     });
+
+    // Fetch notifications from the notifications collection of the users who sent the notifications
+    _firestore
+        .collection('users')
+        .where('sentNotifications', arrayContains: userId)
+        .get()
+        .then((querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        final senderId = doc.id;
+        final senderNotificationsCollection = _firestore
+            .collection('users')
+            .doc(senderId)
+            .collection('notifications');
+
+        senderNotificationsCollection.snapshots().listen((snapshot) {
+          final senderNotifications = snapshot.docs
+              .map((doc) =>
+                  Notification.fromMap(doc.data() as Map<String, dynamic>))
+              .toList();
+
+          // Add the sender's notifications to the _notifications list
+          _notifications.addAll(senderNotifications);
+          _unreadNotifications = _notifications
+              .where((notification) => !notification.isRead)
+              .length;
+          notifyListeners();
+        });
+      });
+    });
   }
 
-  Future<void> addNotification(Notification notification) async {
-    await _notificationsCollection.add(notification.toMap());
+  Future<void> addNotification(Notification notification,
+      {required String receiverId}) async {
+    final receiverNotificationsCollection = _firestore
+        .collection('users')
+        .doc(receiverId)
+        .collection('notifications');
+    await receiverNotificationsCollection.add(notification.toMap());
     notifyListeners();
   }
 
   void markAsRead() async {
-    for (var id in _unreadNotificationsIds) {
-      await FirebaseFirestore.instance
+    final userId = _auth.currentUser!.uid;
+    final batch = _firestore.batch();
+
+    final unreadNotifications =
+        _notifications.where((notification) => !notification.isRead).toList();
+
+    for (var notification in unreadNotifications) {
+      final notificationDoc = _firestore
+          .collection('users')
+          .doc(userId)
           .collection('notifications')
-          .doc(id)
-          .update({'isRead': true});
+          .doc(notification.id);
+      batch.update(notificationDoc, {'isRead': true});
     }
+
     _unreadNotifications = 0;
-    _unreadNotificationsIds = [];
     notifyListeners();
   }
 
-  Future<void> jobApplicationNotification(
+  Future<void> someNotification(
       {required String receiverId,
       required String senderId,
       required String senderName,
+      required String title,
       required String notif}) async {
     // Fetch the senderName from Firestore
     String? senderName;
@@ -110,7 +151,7 @@ class NotificationProvider with ChangeNotifier {
             .collection('notifications')
             .doc()
             .id,
-        title: 'New Application',
+        title: title,
         notif: notif,
         senderName: senderName!,
         isRead: false,
@@ -123,4 +164,15 @@ class NotificationProvider with ChangeNotifier {
           .add(notification.toMap());
     }
   }
+
+  Stream<QuerySnapshot> getNotificationsStream(String jobId) {
+  final userId = _auth.currentUser!.uid;
+  return _firestore
+      .collection('users')
+      .doc(userId)
+      .collection('notifications')
+      .where('jobId', isEqualTo: jobId)
+      .where('notif', isEqualTo: 'Applied for the job')
+      .snapshots();
+}
 }

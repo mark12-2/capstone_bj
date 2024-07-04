@@ -111,28 +111,52 @@ class PostsProvider with ChangeNotifier {
     });
   }
 
-
   // adding a comment
-  Future<DocumentReference> addComment(String commentText, String postId) async {
-  UserModel? currentUserDetails = await fetchCurrentUserDetails();
-  if (currentUserDetails == null) {
-    throw Exception('Current user details could not be fetched.');
+  Future<DocumentReference> addComment(
+      String commentText, String postId) async {
+    UserModel? currentUserDetails = await fetchCurrentUserDetails();
+    if (currentUserDetails == null) {
+      throw Exception('Current user details could not be fetched.');
+    }
+
+    Map<String, dynamic> commentData = {
+      'commentText': commentText,
+      'postId': postId,
+      'username': currentUserDetails.name,
+      'userId': currentUserDetails.uid,
+      'createdAt': Timestamp.now(),
+    };
+
+    return FirebaseFirestore.instance
+        .collection('Posts')
+        .doc(postId)
+        .collection('Comments')
+        .add(commentData);
   }
 
-  Map<String, dynamic> commentData = {
-    'commentText': commentText,
-    'postId': postId,
-    'username': currentUserDetails.name,
-    'userId': currentUserDetails.uid,
-    'createdAt': Timestamp.now(),
-  };
+  Future<void> addApplicant(
+      String postId, String applicantId, String applicantName) async {
+    UserModel? currentUserDetails = await fetchCurrentUserDetails();
+    if (currentUserDetails == null) {
+      throw Exception('Current user details could not be fetched.');
+    }
+    await FirebaseFirestore.instance
+        .collection('Posts')
+        .doc(postId)
+        .collection('Applicants')
+        .doc(applicantId)
+        .set({
+      'applicantName': currentUserDetails.name,
+      'applicantPhone': currentUserDetails.phoneNumber,
+      'idOfApplicant': applicantId,
+    });
+  }
 
-  return FirebaseFirestore.instance
-     .collection('Posts')
-     .doc(postId)
-     .collection('Comments')
-     .add(commentData);
-}
-
-
+  Stream<QuerySnapshot> getApplicantsStream(String jobId) {
+    return FirebaseFirestore.instance
+        .collection('Posts')
+        .doc(jobId)
+        .collection('Applicants')
+        .snapshots();
+  }
 }
