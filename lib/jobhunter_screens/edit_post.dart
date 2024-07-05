@@ -49,7 +49,7 @@ class _EditPostState extends State<EditPost> {
             _post = post;
             _description = _post?.description;
             _type = _post?.type;
-            _rate = _post?.rate;
+            // _rate = _post?.rate;
             _isLoading = false;
           });
         } else {
@@ -79,7 +79,7 @@ class _EditPostState extends State<EditPost> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-            child: Padding(
+              child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Form(
                   key: _formKey,
@@ -112,15 +112,15 @@ class _EditPostState extends State<EditPost> {
                         onSaved: (value) => _type = value,
                       ),
                       const SizedBox(height: 20),
-                      TextFormField(
-                        initialValue: _rate,
-                        decoration: customInputDecoration('Rate'),
-                        maxLines: 5,
-                        minLines: 1,
-                        keyboardType: TextInputType.multiline,
-                        onSaved: (value) => _rate = value,
-                      ),
-                      const SizedBox(height: 20),
+                      // TextFormField(
+                      //   initialValue: _rate,
+                      //   decoration: customInputDecoration('Rate'),
+                      //   maxLines: 5,
+                      //   minLines: 1,
+                      //   keyboardType: TextInputType.multiline,
+                      //   onSaved: (value) => _rate = value,
+                      // ),
+                      // const SizedBox(height: 20),
                       Row(
                         children: [
                           ElevatedButton(
@@ -138,7 +138,7 @@ class _EditPostState extends State<EditPost> {
                   ),
                 ),
               ),
-          ),
+            ),
     );
   }
 
@@ -151,7 +151,7 @@ class _EditPostState extends State<EditPost> {
           id: widget.postId,
           description: _description ?? _post?.description,
           type: _type ?? _post?.type,
-          rate: _rate ?? _post?.rate,
+          // rate: _rate ?? _post?.rate,
         );
 
         final postsProvider =

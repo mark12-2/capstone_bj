@@ -30,7 +30,10 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> fetchUserData() async {
-    final userDoc = await FirebaseFirestore.instance.collection('users').doc(widget.userId).get();
+    final userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.userId)
+        .get();
     if (userDoc.exists) {
       setState(() {
         userData = userDoc.data();
@@ -169,7 +172,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 String description = post['description'];
                 String type = post['type'];
                 String location = post['location'];
-                String rate = post['rate'];
+                String rate = post['rate'] ?? '';
 
                 return Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -263,10 +266,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                     "Type of Job: $type",
                                     style: CustomTextStyle.typeRegularText,
                                   ),
-                                  Text(
-                                    "Rate: $rate",
-                                    style: CustomTextStyle.regularText,
-                                  ),
+                                  role == 'Employer'
+                                      ? Text(
+                                          "Rate: $rate",
+                                          style: CustomTextStyle.regularText,
+                                        )
+                                      : Container(),
                                   const SizedBox(height: 15),
                                   Row(children: [
                                     IconButton(

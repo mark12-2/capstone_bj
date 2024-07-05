@@ -1,5 +1,6 @@
 import 'package:capstone/employer_screens/edit_jobpost.dart';
 import 'package:capstone/jobhunter_screens/edit_post.dart';
+import 'package:capstone/jobhunter_screens/resume_form.dart';
 import 'package:capstone/provider/mapping/location_service.dart';
 import 'package:capstone/provider/posts_provider.dart';
 import 'package:capstone/screens_for_auth/edit_user_information.dart';
@@ -155,7 +156,7 @@ class _JobHunterProfilePageState extends State<JobHunterProfilePage> {
           ),
           Text(
             userLoggedIn.userModel.role,
-            style: CustomTextStyle.typeRegularText,
+            style: CustomTextStyle.roleRegularText,
           ),
         ],
       ),
@@ -231,7 +232,6 @@ class _JobHunterProfilePageState extends State<JobHunterProfilePage> {
                 String description = post['description'];
                 String type = post['type'];
                 String location = post['location'];
-                String rate = post['rate'];
 
                 return Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -325,10 +325,6 @@ class _JobHunterProfilePageState extends State<JobHunterProfilePage> {
                                     "Type of Job: $type",
                                     style: CustomTextStyle.typeRegularText,
                                   ),
-                                  Text(
-                                    "Rate: $rate",
-                                    style: CustomTextStyle.regularText,
-                                  ),
                                   const SizedBox(height: 15),
                                   Row(children: [
                                     IconButton(
@@ -399,22 +395,73 @@ class _JobHunterProfilePageState extends State<JobHunterProfilePage> {
   Widget buildResumeTab() {
     final userLoggedIn =
         Provider.of<auth_provider.AuthProvider>(context, listen: false);
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(10.0),
-      child: Container(
-        height: MediaQuery.of(context).size.height - 200,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            buildResumeItem('Name', userLoggedIn.userModel.name),
-            buildResumeItem(
-                'Contact Number', userLoggedIn.userModel.phoneNumber),
-            buildResumeItem('Sex', userLoggedIn.userModel.sex),
-            buildResumeItem('Address', userLoggedIn.userModel.address),
-          ],
-        ),
-      ),
+
+    return FutureBuilder(
+      future: fetchResumeData(userLoggedIn.uid),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          Map<String, dynamic> resumeData =
+              snapshot.data as Map<String, dynamic>;
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(20.0),
+            child: Container(
+              height: MediaQuery.of(context).size.height - 100,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  buildResumeItem('Name', userLoggedIn.userModel.name),
+                  buildResumeItem('Sex', userLoggedIn.userModel.sex),
+                   buildResumeItem('Birthday', userLoggedIn.userModel.birthdate),
+                  buildResumeItem(
+                      'Contacts', userLoggedIn.userModel.phoneNumber),
+                  buildResumeItem('Email', userLoggedIn.userModel.email ?? ''),
+                  buildResumeItem('Address', userLoggedIn.userModel.address),
+                  buildResumeItem('Skills', resumeData['skills'] ?? ''),
+                  buildResumeItem('Experience', resumeData['experience'] ?? ''),
+                  buildResumeItem(
+                      'Expected Salary', resumeData['expectedSalary'] ?? ''),
+                  TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ResumeForm(resumeData: resumeData),
+                          ),
+                        );
+                      },
+                      child: Text('Add or Edit Resume Details'))
+                ],
+              ),
+            ),
+          );
+        } else {
+          return Center(child: CircularProgressIndicator());
+        }
+      },
     );
+  }
+
+  Future<Map<String, dynamic>> fetchResumeData(String uid) async {
+    try {
+      final userRef = FirebaseFirestore.instance.collection("users").doc(uid);
+      final userDoc = await userRef.get();
+      if (userDoc.exists) {
+        final resumeRef = userRef.collection("resume").limit(1);
+        final resumeQuerySnapshot = await resumeRef.get();
+        if (resumeQuerySnapshot.docs.isNotEmpty) {
+          final resumeDoc = resumeQuerySnapshot.docs.first;
+          return resumeDoc.data();
+        } else {
+          return {}; //empty map if no resume document is found
+        }
+      } else {
+        return {}; // empty map if no user document is found
+      }
+    } catch (e) {
+      print('Error: $e');
+      rethrow;
+    }
   }
 
   Widget buildResumeItem(String title, String content) {

@@ -52,7 +52,7 @@ class PostsProvider with ChangeNotifier {
       "description": post.description,
       "type": post.type,
       "location": post.location ?? '',
-      "rate": post.rate,
+      "rate": post.rate ?? '',
       "timestamp": Timestamp.now(),
       "likes": []
     });
@@ -103,7 +103,7 @@ class PostsProvider with ChangeNotifier {
       "description": post.description,
       "type": post.type,
       "location": post.location ?? '',
-      "rate": post.rate,
+      "rate": post.rate ?? '',
       "name": currentUserDetails.name,
       "email": currentUserDetails.email,
       "role": currentUserDetails.role,

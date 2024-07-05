@@ -136,7 +136,7 @@ class _EmployerProfilePageState extends State<EmployerProfilePage> {
           ),
           Text(
             userLoggedIn.userModel.role,
-            style: CustomTextStyle.typeRegularText,
+            style: CustomTextStyle.roleRegularText,
           ),
         ],
       ),
@@ -388,9 +388,12 @@ class _EmployerProfilePageState extends State<EmployerProfilePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             buildResumeItem('Name', userLoggedIn.userModel.name),
+            buildResumeItem('Sex', userLoggedIn.userModel.sex),
+            buildResumeItem('Birthday', userLoggedIn.userModel.birthdate),
             buildResumeItem(
                 'Contact Number', userLoggedIn.userModel.phoneNumber),
-            buildResumeItem('Sex', userLoggedIn.userModel.sex),
+            buildResumeItem(
+            'Email', userLoggedIn.userModel.email ?? ''),
             buildResumeItem('Address', userLoggedIn.userModel.address),
           ],
         ),

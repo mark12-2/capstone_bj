@@ -47,24 +47,23 @@ class AuthProvider extends ChangeNotifier {
   void signInWithPhone(BuildContext context, String phoneNumber) async {
     try {
       await _firebaseAuth.verifyPhoneNumber(
-        phoneNumber: phoneNumber,
-        verificationCompleted: (PhoneAuthCredential phoneAuthCredential) async {
-          await _firebaseAuth.signInWithCredential(phoneAuthCredential);
-        },
-        verificationFailed: (error) {
-          showSnackBar(context, "Verification failed: ${error.message}");
-        },
-        codeSent: (verificationId, forceResendingToken) async {
-          // Navigate to the OTP screen
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => OtpScreen(verificationId: verificationId),
-            ),
-          );
-        },
-        codeAutoRetrievalTimeout: (verificationId) {},
-      );
+          phoneNumber: phoneNumber,
+          verificationCompleted:
+              (PhoneAuthCredential phoneAuthCredential) async {
+            await _firebaseAuth.signInWithCredential(phoneAuthCredential);
+          },
+          verificationFailed: (error) {
+            throw Exception(error.message);
+          },
+          codeSent: (verificationId, forceResendingToken) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => OtpScreen(verificationId: verificationId),
+              ),
+            );
+          },
+          codeAutoRetrievalTimeout: (verificationId) {});
     } on FirebaseAuthException catch (e) {
       showSnackBar(context, e.message.toString());
     }
@@ -99,13 +98,12 @@ class AuthProvider extends ChangeNotifier {
 
     try {
       PhoneAuthCredential creds = PhoneAuthProvider.credential(
-        verificationId: verificationId,
-        smsCode: userOtp,
-      );
+          verificationId: verificationId, smsCode: userOtp);
 
       User? user = (await _firebaseAuth.signInWithCredential(creds)).user;
 
       if (user != null) {
+        // carry our logic
         _uid = user.uid;
         onSuccess();
       }
@@ -270,5 +268,13 @@ class AuthProvider extends ChangeNotifier {
   // deleting user information (account)
   Future<void> deleteUserFromFirestore(String uid) async {
     await _firebaseFirestore.collection("users").doc(uid).delete();
+  }
+
+  Stream<QuerySnapshot> getResumeData(String uid) {
+    return FirebaseFirestore.instance
+        .collection("users")
+        .doc(uid)
+        .collection("resume")
+        .snapshots();
   }
 }

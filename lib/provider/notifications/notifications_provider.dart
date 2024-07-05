@@ -122,7 +122,10 @@ class NotificationProvider with ChangeNotifier {
           .doc(userId)
           .collection('notifications')
           .doc(notification.id);
-      batch.update(notificationDoc, {'isRead': true});
+      batch.update(notificationDoc, {
+        'isRead': true,
+        'readAt': FieldValue.serverTimestamp(),
+      });
     }
 
     _unreadNotifications = 0;
@@ -166,13 +169,13 @@ class NotificationProvider with ChangeNotifier {
   }
 
   Stream<QuerySnapshot> getNotificationsStream(String jobId) {
-  final userId = _auth.currentUser!.uid;
-  return _firestore
-      .collection('users')
-      .doc(userId)
-      .collection('notifications')
-      .where('jobId', isEqualTo: jobId)
-      .where('notif', isEqualTo: 'Applied for the job')
-      .snapshots();
-}
+    final userId = _auth.currentUser!.uid;
+    return _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('notifications')
+        .where('jobId', isEqualTo: jobId)
+        .where('notif', isEqualTo: 'Applied for the job')
+        .snapshots();
+  }
 }

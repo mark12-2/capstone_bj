@@ -1,4 +1,4 @@
-import 'package:capstone/default_screens/view_profile.dart';
+import 'package:capstone/jobhunter_screens/resume_view.dart';
 import 'package:capstone/provider/notifications/notifications_provider.dart';
 import 'package:capstone/provider/posts_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -84,8 +84,8 @@ class _ApplicantsPageState extends State<ApplicantsPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    ProfilePage(userId: applicantId),
+                                builder: (context) => JobHunterResumeView(
+                                    userId: applicant['idOfApplicant']),
                               ),
                             );
                           },

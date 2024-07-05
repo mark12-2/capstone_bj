@@ -133,7 +133,7 @@ class _HomePageState extends State<HomePage> {
                     String description = post['description'];
                     String type = post['type'];
                     String location = post['location']; // for job post
-                    String rate = post['rate'];
+                    String rate = post['rate'] ?? ''; // for job post
 
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -266,10 +266,12 @@ class _HomePageState extends State<HomePage> {
                                 "Type of Job: $type",
                                 style: CustomTextStyle.typeRegularText,
                               ),
-                              Text(
-                                "Rate: $rate",
-                                style: CustomTextStyle.regularText,
-                              ),
+                              role == 'Employer'
+                                  ? Text(
+                                      "Rate: $rate",
+                                      style: CustomTextStyle.regularText,
+                                    )
+                                  : Container(),
                               const SizedBox(height: 20),
                               // comment section and like
                               Padding(
@@ -500,11 +502,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<bool> _checkApplicationStatus(String postId, String userId) async {
-  final postRef = FirebaseFirestore.instance.collection('Posts').doc(postId);
-  final postDoc = await postRef.get();
-  final applicants = postDoc.get('applicants') as List<dynamic>?;
-  return applicants != null && applicants.contains(userId);
-}
+    final postRef = FirebaseFirestore.instance.collection('Posts').doc(postId);
+    final postDoc = await postRef.get();
+    final applicants = postDoc.get('applicants') as List<dynamic>?;
+    return applicants != null && applicants.contains(userId);
+  }
 
   // adding a comment
   void addComment(BuildContext context, String postId) async {
