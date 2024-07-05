@@ -1,6 +1,8 @@
 import 'package:capstone/default_screens/view_profile.dart';
+import 'package:capstone/provider/notifications/notifications_provider.dart';
 import 'package:capstone/provider/posts_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ApplicantsPage extends StatefulWidget {
@@ -14,6 +16,8 @@ class ApplicantsPage extends StatefulWidget {
 
 class _ApplicantsPageState extends State<ApplicantsPage> {
   final PostsProvider _postsProvider = PostsProvider();
+  final _notificationProvider = NotificationProvider();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   late Stream<QuerySnapshot> _applicantsStream;
 
   @override
@@ -59,6 +63,8 @@ class _ApplicantsPageState extends State<ApplicantsPage> {
 
                     String applicantName = applicant['applicantName'];
                     String applicantPhone = applicant['applicantPhone'];
+                    String applicantId = applicant['idOfApplicant'];
+                    bool isHired = applicant['isHired'] ?? false;
 
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -67,19 +73,45 @@ class _ApplicantsPageState extends State<ApplicantsPage> {
                           title: Text(applicantName),
                           subtitle: Text(applicantPhone),
                           trailing: ElevatedButton(
-                            onPressed: () {
-                              // Hire button
-                              _hireApplicant(applicant);
-                            },
-                            child: Text('Hire'),
+                            onPressed: isHired
+                                ? null
+                                : () {
+                                    _hireApplicant(applicantId);
+                                  },
+                            child: Text(isHired ? 'Hired' : 'Hire'),
                           ),
                           onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ProfilePage(
-                                    userId: applicant['idOfApplicant']),
+                                builder: (context) =>
+                                    ProfilePage(userId: applicantId),
                               ),
+                            );
+                          },
+                          onLongPress: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Confirm Deletion'),
+                                  content: const Text(
+                                      'Are you sure you want to remove this applicant?'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: const Text('Cancel'),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    TextButton(
+                                        child: const Text('Delete'),
+                                        onPressed: () {
+                                          _deleteApplicant(applicantId);
+                                        }),
+                                  ],
+                                );
+                              },
                             );
                           },
                         ),
@@ -95,13 +127,27 @@ class _ApplicantsPageState extends State<ApplicantsPage> {
     );
   }
 
-  void _hireApplicant(dynamic applicant) {
-    // Implement hiring logic here
-    print('Hiring ${applicant['applicantName']}');
+  void _hireApplicant(String applicantId) async {
+    await _postsProvider.updateApplicantStatus(widget.jobId, applicantId, true);
+
+    // Send a notification to the applicant
+    await _notificationProvider.someNotification(
+      receiverId: applicantId,
+      senderId: _auth.currentUser!.uid,
+      senderName: _auth.currentUser!.displayName ?? '',
+      title: 'Job Update',
+      notif: 'You have been hired for the job',
+    );
+
+    print('Hiring $applicantId and sending a notification');
   }
 
-  void _deleteApplicant(dynamic applicant) {
-    // Implement deleting logic here
-    print('Deleting ${applicant['applicantName']}');
+  void _deleteApplicant(String applicantId) async {
+    await _postsProvider.removeApplicantFromJob(widget.jobId, applicantId);
+
+    // // Remove the job from the applicant's applied jobs list
+    // await _postsProvider.removeJobFromApplicant(applicantId, widget.jobId);
+
+    print('Deleting $applicantId');
   }
 }

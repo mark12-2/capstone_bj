@@ -8,6 +8,7 @@ class PostsProvider with ChangeNotifier {
   final CollectionReference posts =
       FirebaseFirestore.instance.collection('Posts');
   final FirebaseAuth auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<UserModel?> fetchCurrentUserDetails() async {
     try {
@@ -140,6 +141,7 @@ class PostsProvider with ChangeNotifier {
     if (currentUserDetails == null) {
       throw Exception('Current user details could not be fetched.');
     }
+
     await FirebaseFirestore.instance
         .collection('Posts')
         .doc(postId)
@@ -149,6 +151,12 @@ class PostsProvider with ChangeNotifier {
       'applicantName': currentUserDetails.name,
       'applicantPhone': currentUserDetails.phoneNumber,
       'idOfApplicant': applicantId,
+      'isHired': false,
+      'timestamp': Timestamp.now()
+    });
+
+    await FirebaseFirestore.instance.collection('Posts').doc(postId).update({
+      'applicants': FieldValue.arrayUnion([applicantId]),
     });
   }
 
@@ -158,5 +166,40 @@ class PostsProvider with ChangeNotifier {
         .doc(jobId)
         .collection('Applicants')
         .snapshots();
+  }
+
+  // Function to check if the current user has applied for a job
+  Future<bool> hasApplied(String postId, String applicantId) async {
+    final postDoc = await _firestore.collection('Posts').doc(postId).get();
+    if (postDoc.exists) {
+      final data = postDoc.data() as Map<String, dynamic>;
+      if (data.containsKey('applicants')) {
+        final applicants = (data['applicants'] as List<dynamic>)
+            .map((e) => e as Map<String, dynamic>)
+            .toList();
+        return applicants
+            .any((applicant) => applicant['applicantId'] == applicantId);
+      }
+    }
+    return false;
+  }
+
+  Future<void> updateApplicantStatus(
+      String jobId, String applicantId, bool isHired) async {
+    await FirebaseFirestore.instance
+        .collection('Posts')
+        .doc(jobId)
+        .collection('Applicants')
+        .doc(applicantId)
+        .update({'isHired': isHired});
+  }
+
+  Future<void> removeApplicantFromJob(String jobId, String applicantId) async {
+    await FirebaseFirestore.instance
+        .collection('Posts')
+        .doc(jobId)
+        .collection('Applicants')
+        .doc(applicantId)
+        .delete();
   }
 }

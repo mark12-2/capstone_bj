@@ -99,352 +99,351 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         children: [
           StreamBuilder<QuerySnapshot>(
-              stream: postDetails.getPostsStream(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text("Error: ${snapshot.error}"),
-                  );
-                }
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return const Center(
-                    child: Text("No posts available"),
-                  );
-                }
+            stream: postDetails.getPostsStream(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              if (snapshot.hasError) {
+                return Center(
+                  child: Text("Error: ${snapshot.error}"),
+                );
+              }
+              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                return const Center(
+                  child: Text("No posts available"),
+                );
+              }
 
-                final posts = snapshot.data!.docs;
+              final posts = snapshot.data!.docs;
 
-                return Expanded(
-                  child: ListView.builder(
-                    itemCount: posts.length,
-                    itemBuilder: (context, index) {
-                      final post = posts[index];
+              return Expanded(
+                child: ListView.builder(
+                  itemCount: posts.length,
+                  itemBuilder: (context, index) {
+                    final post = posts[index];
 
-                      String name = post['name'];
-                      String userId = post['ownerId'];
-                      String role = post['role'];
-                      String profilePic = post['profilePic'];
-                      String title = post['title']; // for job post
-                      String description = post['description'];
-                      String type = post['type'];
-                      String location = post['location']; // for job post
-                      String rate = post['rate'];
+                    String name = post['name'];
+                    String userId = post['ownerId'];
+                    String role = post['role'];
+                    String profilePic = post['profilePic'];
+                    String title = post['title']; // for job post
+                    String description = post['description'];
+                    String type = post['type'];
+                    String location = post['location']; // for job post
+                    String rate = post['rate'];
 
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Card(
-                          color: const Color.fromARGB(255, 255, 255, 255),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          elevation: 4.0,
-                          margin:
-                              const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    CircleAvatar(
-                                      backgroundImage: NetworkImage(profilePic),
-                                      radius: 35.0,
-                                    ),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        GestureDetector(
-                                          onTap: () {
-                                            showDialog(
-                                                context: context,
-                                                builder: (context) =>
-                                                    SimpleDialog(
-                                                      children: [
-                                                        SimpleDialogOption(
-                                                          child: const Text(
-                                                              'View Profile'),
-                                                          onPressed: () {
-                                                            Navigator.pop(
-                                                                context);
-                                                          },
-                                                        ),
-                                                        const SizedBox(
-                                                          width: 10,
-                                                        ),
-                                                        //
-                                                        SimpleDialogOption(
-                                                          child: const Text(
-                                                              'Send Message'),
-                                                          onPressed: () {
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                builder:
-                                                                    (context) =>
-                                                                        MessagingBubblePage(
-                                                                  receiverName:
-                                                                      name,
-                                                                  receiverId:
-                                                                      userId,
-                                                                ),
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Card(
+                        color: const Color.fromARGB(255, 255, 255, 255),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        elevation: 4.0,
+                        margin: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  CircleAvatar(
+                                    backgroundImage: NetworkImage(profilePic),
+                                    radius: 35.0,
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) =>
+                                                  SimpleDialog(
+                                                    children: [
+                                                      SimpleDialogOption(
+                                                        child: const Text(
+                                                            'View Profile'),
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                      ),
+                                                      const SizedBox(
+                                                        width: 10,
+                                                      ),
+                                                      //
+                                                      SimpleDialogOption(
+                                                        child: const Text(
+                                                            'Send Message'),
+                                                        onPressed: () {
+                                                          Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  MessagingBubblePage(
+                                                                receiverName:
+                                                                    name,
+                                                                receiverId:
+                                                                    userId,
                                                               ),
-                                                            );
-                                                          },
-                                                        ),
-                                                      ],
-                                                    ));
-                                          },
-                                          child: Text(
-                                            "$name",
-                                            style: CustomTextStyle.semiBoldText
-                                                .copyWith(
-                                              color: const Color.fromARGB(
-                                                  255, 0, 0, 0),
-                                              fontSize:
-                                                  responsiveSize(context, 0.05),
-                                            ),
+                                                            ),
+                                                          );
+                                                        },
+                                                      ),
+                                                    ],
+                                                  ));
+                                        },
+                                        child: Text(
+                                          "$name",
+                                          style: CustomTextStyle.semiBoldText
+                                              .copyWith(
+                                            color: const Color.fromARGB(
+                                                255, 0, 0, 0),
+                                            fontSize:
+                                                responsiveSize(context, 0.05),
                                           ),
                                         ),
-                                        Text(
-                                          "$role",
-                                          style:
-                                              CustomTextStyle.roleRegularText,
+                                      ),
+                                      Text(
+                                        "$role",
+                                        style: CustomTextStyle.roleRegularText,
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                              const SizedBox(height: 15),
+                              // post description
+                              role == 'Employer'
+                                  ? Text(
+                                      "$title",
+                                      style: CustomTextStyle.semiBoldText,
+                                    )
+                                  : Container(), // return empty 'title belongs to employer'
+                              const SizedBox(height: 5),
+                              Text(
+                                "$description",
+                                style: CustomTextStyle.regularText,
+                              ),
+                              const SizedBox(height: 15),
+                              role == 'Employer'
+                                  ? Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.location_pin,
+                                          color: Colors.blue,
+                                        ),
+                                        GestureDetector(
+                                          onTap: () async {
+                                            final locations =
+                                                await locationFromAddress(
+                                                    location);
+                                            final lat = locations[0].latitude;
+                                            final lon = locations[0].longitude;
+                                            showLocationPickerModal(
+                                                context,
+                                                TextEditingController(
+                                                    text: '$lat, $lon'));
+                                          },
+                                          child: Text(
+                                              "$location (tap to view location)",
+                                              style: const TextStyle(
+                                                  color: Colors.blue)),
                                         ),
                                       ],
                                     )
-                                  ],
-                                ),
+                                  : Container(),
+                              Text(
+                                "Type of Job: $type",
+                                style: CustomTextStyle.typeRegularText,
+                              ),
+                              Text(
+                                "Rate: $rate",
+                                style: CustomTextStyle.regularText,
+                              ),
+                              const SizedBox(height: 20),
+                              // comment section and like
+                              Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        InkWell(
+                                          onTap: () async {
+                                            final postId = post.id;
+                                            final userId =
+                                                auth.currentUser!.uid;
 
-                                const SizedBox(height: 15),
-                                // post description
-                                role == 'Employer'
-                                    ? Text(
-                                        "$title",
-                                        style: CustomTextStyle.semiBoldText,
-                                      )
-                                    : Container(), // return empty 'title belongs to employer'
+                                            final postDoc =
+                                                await FirebaseFirestore.instance
+                                                    .collection('Posts')
+                                                    .doc(postId)
+                                                    .get();
 
-                                const SizedBox(height: 5),
+                                            if (postDoc.exists) {
+                                              final data = postDoc.data()
+                                                  as Map<String, dynamic>;
 
-                                Text(
-                                  "$description",
-                                  style: CustomTextStyle.regularText,
-                                ),
+                                              if (data.containsKey('likes')) {
+                                                final likes = (data['likes']
+                                                        as List<dynamic>)
+                                                    .map((e) => e as String)
+                                                    .toList();
 
-                                const SizedBox(height: 15),
-
-                                role == 'Employer'
-                                    ? Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.location_pin,
-                                            color: Colors.blue,
-                                          ),
-                                          GestureDetector(
-                                            onTap: () async {
-                                              final locations =
-                                                  await locationFromAddress(
-                                                      location);
-                                              final lat = locations[0].latitude;
-                                              final lon =
-                                                  locations[0].longitude;
-                                              showLocationPickerModal(
-                                                  context,
-                                                  TextEditingController(
-                                                      text: '$lat, $lon'));
-                                            },
-                                            child: Text(
-                                                "$location (tap to view location)",
-                                                style: const TextStyle(
-                                                    color: Colors.blue)),
-                                          ),
-                                        ],
-                                      )
-                                    : Container(),
-
-                                Text(
-                                  "Type of Job: $type",
-                                  style: CustomTextStyle.typeRegularText,
-                                ),
-                                Text(
-                                  "Rate: $rate",
-                                  style: CustomTextStyle.regularText,
-                                ),
-
-                                const SizedBox(height: 20),
-
-                                // comment section and like
-                                Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          InkWell(
-                                            onTap: () async {
-                                              final postId = post.id;
-                                              final userId =
-                                                  auth.currentUser!.uid;
-
-                                              final postDoc =
-                                                  await FirebaseFirestore
-                                                      .instance
-                                                      .collection('Posts')
-                                                      .doc(postId)
-                                                      .get();
-
-                                              if (postDoc.exists) {
-                                                final data = postDoc.data()
-                                                    as Map<String, dynamic>;
-
-                                                if (data.containsKey('likes')) {
-                                                  final likes = (data['likes']
-                                                          as List<dynamic>)
-                                                      .map((e) => e as String)
-                                                      .toList();
-
-                                                  if (likes.contains(userId)) {
-                                                    likes.remove(userId);
-                                                  } else {
-                                                    likes.add(userId);
-                                                  }
-
-                                                  await postDoc.reference
-                                                      .update({'likes': likes});
+                                                if (likes.contains(userId)) {
+                                                  likes.remove(userId);
                                                 } else {
-                                                  await postDoc.reference
-                                                      .update({
-                                                    'likes': [userId]
-                                                  });
+                                                  likes.add(userId);
                                                 }
+
+                                                await postDoc.reference
+                                                    .update({'likes': likes});
+                                              } else {
+                                                await postDoc.reference.update({
+                                                  'likes': [userId]
+                                                });
                                               }
-                                            },
-                                            child: Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.thumb_up_alt_rounded,
-                                                  color: post.data() != null &&
-                                                          (post.data() as Map<
-                                                                  String,
-                                                                  dynamic>)
-                                                              .containsKey(
-                                                                  'likes') &&
-                                                          ((post.data() as Map<
-                                                                      String,
-                                                                      dynamic>)['likes']
-                                                                  as List<
-                                                                      dynamic>)
-                                                              .contains(
-                                                                  auth.currentUser!.uid)
-                                                      ? Colors.blue
-                                                      : Colors.grey,
-                                                ),
-                                                const SizedBox(width: 5),
-                                                Text(
-                                                  'React (${(post.data() as Map<String, dynamic>)['likes']?.length ?? 0})',
-                                                  style: CustomTextStyle
-                                                      .regularText,
-                                                ),
-                                              ],
-                                            ),
+                                            }
+                                          },
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.thumb_up_alt_rounded,
+                                                color: post.data() != null &&
+                                                        (post.data() as Map<
+                                                                String,
+                                                                dynamic>)
+                                                            .containsKey(
+                                                                'likes') &&
+                                                        ((post.data() as Map<
+                                                                    String,
+                                                                    dynamic>)['likes']
+                                                                as List<
+                                                                    dynamic>)
+                                                            .contains(
+                                                                auth.currentUser!.uid)
+                                                    ? Colors.blue
+                                                    : Colors.grey,
+                                              ),
+                                              const SizedBox(width: 5),
+                                              Text(
+                                                'React (${(post.data() as Map<String, dynamic>)['likes']?.length ?? 0})',
+                                                style:
+                                                    CustomTextStyle.regularText,
+                                              ),
+                                            ],
                                           ),
-                                          const SizedBox(width: 45),
-                                          InkWell(
-                                            onTap: () {
-                                              showCommentDialog(
-                                                  post.id, context);
-                                            },
-                                            child: const Row(
-                                              children: [
-                                                Icon(Icons.comment),
-                                                SizedBox(width: 5),
-                                                Text(
-                                                  'Comments',
-                                                  style: CustomTextStyle
-                                                      .regularText,
-                                                ),
-                                              ],
-                                            ),
+                                        ),
+                                        const SizedBox(width: 25),
+                                        InkWell(
+                                          onTap: () {
+                                            showCommentDialog(post.id, context);
+                                          },
+                                          child: const Row(
+                                            children: [
+                                              Icon(Icons.comment),
+                                              SizedBox(width: 5),
+                                              Text(
+                                                'Comments',
+                                                style:
+                                                    CustomTextStyle.regularText,
+                                              ),
+                                            ],
                                           ),
-                                          const SizedBox(
-                                            height: 50,
-                                          )
-                                        ],
-                                      ),
+                                        ),
+                                        const SizedBox(
+                                          height: 50,
+                                        )
+                                      ],
+                                    ),
+                                    const SizedBox(width: 5),
+                                    userId == auth.currentUser!.uid
+                                        ? Container()
+                                        : role == 'Employer'
+                                            ? FutureBuilder<bool>(
+                                                future: _checkApplicationStatus(
+                                                    post.id,
+                                                    auth.currentUser!.uid),
+                                                builder: (context, snapshot) {
+                                                  bool isApplied =
+                                                      snapshot.data ?? false;
+                                                  return GestureDetector(
+                                                    onTap: isApplied ||
+                                                            _isApplied
+                                                        ? null
+                                                        : () async {
+                                                            final notificationProvider =
+                                                                Provider.of<
+                                                                        NotificationProvider>(
+                                                                    context,
+                                                                    listen:
+                                                                        false);
+                                                            String receiverId =
+                                                                userId;
+                                                            String
+                                                                applicantName =
+                                                                auth.currentUser!
+                                                                        .displayName ??
+                                                                    'Unknown';
+                                                            String applicantId =
+                                                                auth.currentUser!
+                                                                    .uid;
 
-                                      const SizedBox(width: 45),
-                                      userId == auth.currentUser!.uid
-                                          ? Container()
-                                          : role == 'Employer'
-                                              ? InkWell(
-                                                  child: GestureDetector(
-                                                    onTap: () async {
-                                                      final notificationProvider =
-                                                          Provider.of<
-                                                                  NotificationProvider>(
-                                                              context,
-                                                              listen: false);
-                                                      String receiverId =
-                                                          userId;
-                                                      String applicantName = auth
-                                                              .currentUser!
-                                                              .displayName ??
-                                                          'Unknown';
-                                                      String applicantId =
-                                                          auth.currentUser!.uid;
+                                                            await notificationProvider
+                                                                .someNotification(
+                                                              receiverId:
+                                                                  receiverId,
+                                                              senderId: auth
+                                                                  .currentUser!
+                                                                  .uid,
+                                                              senderName:
+                                                                  applicantName,
+                                                              title:
+                                                                  'New Application',
+                                                              notif:
+                                                                  ', applied to your job entitled "$title"',
+                                                            );
 
-                                                      await notificationProvider
-                                                          .someNotification(
-                                                        receiverId: receiverId,
-                                                        senderId: auth
-                                                            .currentUser!.uid,
-                                                        senderName:
-                                                            applicantName,
-                                                        title:
-                                                            'New Application',
-                                                        notif:
-                                                            ', applied to your job entitled "$title"',
-                                                      );
+                                                            // Save the applicant's information to the job post
+                                                            await Provider.of<
+                                                                        PostsProvider>(
+                                                                    context,
+                                                                    listen:
+                                                                        false)
+                                                                .addApplicant(
+                                                                    post.id,
+                                                                    applicantId,
+                                                                    applicantName);
 
-                                                      // Save the applicant's information to the job post
-                                                      await Provider.of<
-                                                                  PostsProvider>(
-                                                              context,
-                                                              listen: false)
-                                                          .addApplicant(
-                                                              post.id,
-                                                              applicantId,
-                                                              applicantName);
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .showSnackBar(
+                                                              const SnackBar(
+                                                                  content: Text(
+                                                                      'Successfully applied')),
+                                                            );
 
-                                                      setState(() {
-                                                        _isApplied = true;
-                                                      });
-
-                                                      ScaffoldMessenger.of(
-                                                              context)
-                                                          .showSnackBar(
-                                                        const SnackBar(
-                                                            content: Text(
-                                                                'Successfully applied')),
-                                                      );
-                                                    },
+                                                            setState(() {
+                                                              _isApplied = true;
+                                                            });
+                                                          },
                                                     child: Container(
                                                       height: 53,
                                                       width: 105,
                                                       decoration: BoxDecoration(
                                                         border: Border.all(
-                                                          color: _isApplied
+                                                          color: isApplied
                                                               ? Colors.grey
                                                               : Colors.orange,
                                                           width: 2,
@@ -456,13 +455,13 @@ class _HomePageState extends State<HomePage> {
                                                       ),
                                                       child: Center(
                                                         child: Text(
-                                                          _isApplied
+                                                          isApplied
                                                               ? 'Applied'
                                                               : 'Apply Job',
                                                           style: CustomTextStyle
                                                               .regularText
                                                               .copyWith(
-                                                            color: _isApplied
+                                                            color: isApplied
                                                                 ? Colors.grey
                                                                 : const Color
                                                                     .fromARGB(
@@ -478,25 +477,34 @@ class _HomePageState extends State<HomePage> {
                                                         ),
                                                       ),
                                                     ),
-                                                  ),
-                                                )
-                                              : Container(), // return empty container if role is not 'Employer'
-                                    ],
-                                  ),
+                                                  );
+                                                },
+                                              )
+                                            : Container(), // return empty container if role is not 'Employer'
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
-                      );
-                    },
-                  ),
-                );
-              }),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
         ],
       ),
     );
   }
+
+  Future<bool> _checkApplicationStatus(String postId, String userId) async {
+  final postRef = FirebaseFirestore.instance.collection('Posts').doc(postId);
+  final postDoc = await postRef.get();
+  final applicants = postDoc.get('applicants') as List<dynamic>?;
+  return applicants != null && applicants.contains(userId);
+}
 
   // adding a comment
   void addComment(BuildContext context, String postId) async {
